@@ -75,8 +75,7 @@ app.post(`${prefix}/videos`, (req: Request, res: Response) => {
             author: 'it-incubator.ru'
         }
         videos.push(newVideo)
-        res.sendStatus(201)
-        res.send(newVideo)
+        res.status(201).send(newVideo)
     } else {
         res.status(400).json({
             "errorsMessages": [
@@ -106,10 +105,10 @@ app.put(`${prefix}/videos/:id`, (req: Request, res: Response) => {
     const video = videos.find(video => video.id === id)
 
     if (!video) {
-        res.sendStatus(400)
+        res.status(400)
     } else {
         video.title = req.body.title
-        res.sendStatus(204)
+        res.status(204).send(video)
     }
 })
 
