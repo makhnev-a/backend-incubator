@@ -78,8 +78,7 @@ app.post(`${prefix}/videos`, (req: Request, res: Response) => {
         res.sendStatus(201)
         res.send(newVideo)
     } else {
-        res.sendStatus(400)
-        res.send({
+        res.status(400).json({
             "errorsMessages": [
                 {
                     "message": "The Title field is required.",
