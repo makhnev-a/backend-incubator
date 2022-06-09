@@ -122,10 +122,10 @@ app.get(`${prefix}/videos/:id`, (req: Request, res: Response) => {
     const video = videos.find(video => video.id === Number(req.params.id))
 
     if (!video) {
-        res.sendStatus(404)
-        res.send("If video for passed id doesn't exist")
+        res.status(404)
+        // res.send("If video for passed id doesn't exist")
     } else {
-        res.send(video)
+        res.status(200).send(video)
     }
 })
 
