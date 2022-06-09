@@ -94,10 +94,10 @@ app.delete(`${prefix}/videos/:id`, (req: Request, res: Response) => {
     const index = videos.findIndex(video => video.id === id)
 
     if (index === -1) {
-        res.sendStatus(404)
+        res.status(404)
     } else {
         videos.splice(index, 1)
-        res.sendStatus(204)
+        res.status(204)
     }
 })
 
