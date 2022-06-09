@@ -17,7 +17,7 @@ const videos = [
 ]
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('Hello World!222')
+    res.send('Hello Heroku!!!')
 })
 
 app.post("/videos", (req: Request, res: Response) => {
