@@ -3,9 +3,9 @@ import cors from "cors"
 
 const app = express()
 const port = process.env.PORT || 5000
+const prefix = '/lesson_01/api'
 
 app.use(cors())
-// app.use(bodyParser.json({ type: 'application/*+json' }))
 app.use(express.json())
 
 const videos = [
@@ -20,45 +20,64 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Hello Heroku!!!')
 })
 
-app.post("/videos", (req: Request, res: Response) => {
-    const newVideo = {
-        id: +(new Date()),
-        title: req.body.title,
-        author: 'it-incubator.ru'
-    }
-    videos.push(newVideo)
-    res.send(newVideo)
-})
-
-app.delete("/videos/:id", (req: Request, res: Response) => {
-    const newVideos = videos.filter(video => video.id !== Number(req.params.id))
-    res.send(newVideos)
-})
-
-app.put("/videos/:id", (req: Request, res: Response) => {
-    const updatedVideos = videos.map(video => {
-        if (video.id === Number(req.params.id)) {
-            return {
-                ...video,
-                title: req.body.title,
-				author: "Andrey Makhnev"
-            }
+app.post(`${prefix}/videos`, (req: Request, res: Response) => {
+    if (req.body.title) {
+        const newVideo = {
+            id: +(new Date()),
+            title: req.body.title,
+            author: 'it-incubator.ru'
         }
-
-        return video
-    })
-    res.send(updatedVideos)
+        videos.push(newVideo)
+        res.sendStatus(201)
+        res.send(newVideo)
+    } else {
+        res.sendStatus(400)
+        res.send({
+            "errorsMessages": [
+                {
+                    "message": "The Title field is required.",
+                    "field": "title"
+                }
+            ]
+        })
+    }
 })
 
-app.get('/videos', (req: Request, res: Response) => {
+app.delete(`${prefix}/videos/:id`, (req: Request, res: Response) => {
+    const id = Number(req.params.id)
+    const index = videos.findIndex(video => video.id === id)
+
+    if (index === -1) {
+        res.sendStatus(404)
+    } else {
+        videos.splice(index, 1)
+        res.sendStatus(204)
+    }
+})
+
+app.put(`${prefix}/videos/:id`, (req: Request, res: Response) => {
+    const id = Number(req.params.id)
+    const video = videos.find(video => video.id === id)
+
+    if (!video) {
+        res.sendStatus(400)
+    } else {
+        video.title = req.body.title
+        res.sendStatus(204)
+    }
+})
+
+app.get(`${prefix}/videos`, (req: Request, res: Response) => {
+    res.status(200)
     res.send(videos)
 })
 
-app.get("/videos/:id", (req: Request, res: Response) => {
+app.get(`${prefix}/videos/:id`, (req: Request, res: Response) => {
     const video = videos.find(video => video.id === Number(req.params.id))
 
     if (!video) {
         res.sendStatus(404)
+        res.send("If video for passed id doesn't exist")
     } else {
         res.send(video)
     }
