@@ -95,27 +95,36 @@ app.post(`/videos`, (req: Request, res: Response) => {
 })
 
 app.delete(`/videos/:id`, (req: Request, res: Response) => {
-    const id: number = Number(req.params.id)
-    const index: number = videos.findIndex(video => video.id === id)
+    if ("id" in req.params) {
+        const id: number = Number(req.params.id)
+        const index: number = videos.findIndex(video => video.id === id)
 
-    if (index === -1) {
-        res.sendStatus(404)
+        if (index === -1) {
+            res.sendStatus(404)
+        } else {
+            videos.splice(index, 1)
+            res.sendStatus(204)
+        }
     } else {
-        videos.splice(index, 1)
-        res.sendStatus(204)
+        res.sendStatus(404)
     }
 })
 
 app.put(`/videos/:id`, (req: Request, res: Response) => {
-    const id: number = Number(req.params.id)
-    const video = videos.find(video => video.id === id)
+    if ("id" in req.params) {
+        const id: number = Number(req.params.id)
+        const video = videos.find(video => video.id === id)
 
-    if (!video) {
-        res.status(400)
+        if (!video) {
+            res.status(400)
+        } else {
+            video.title = req.body.title
+            res.status(204).send(video)
+        }
     } else {
-        video.title = req.body.title
-        res.status(204).send(video)
+        res.sendStatus(404)
     }
+
 })
 
 app.get(`/videos`, (req: Request, res: Response) => {
@@ -124,13 +133,17 @@ app.get(`/videos`, (req: Request, res: Response) => {
 })
 
 app.get(`/videos/:id`, (req: Request, res: Response) => {
-    const video = videos.find(video => video.id === Number(req.params.id))
+    if ("id" in req.params) {
+        const video = videos.find(video => video.id === Number(req.params.id))
 
-    if (!video) {
-        res.status(404)
-        // res.send("If video for passed id doesn't exist")
+        if (!video) {
+            res.status(404)
+            // res.send("If video for passed id doesn't exist")
+        } else {
+            res.status(200).send(video)
+        }
     } else {
-        res.status(200).send(video)
+        res.sendStatus(404)
     }
 })
 
