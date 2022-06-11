@@ -9,6 +9,12 @@ const postsPrefix = '/hs_01/api'
 app.use(cors())
 app.use(express.json())
 
+interface IVideo {
+    id: number
+    title: string
+    author: string
+}
+
 const videos = [
     {id: 1, title: 'About JS - 01', author: 'it-incubator.eu'},
     {id: 2, title: 'About JS - 02', author: 'it-incubator.eu'},
@@ -67,7 +73,7 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 // videos
-app.post(`${prefix}/videos`, (req: Request, res: Response) => {
+app.post(`/videos`, (req: Request, res: Response) => {
     if (req.body.title) {
         const newVideo = {
             id: +(new Date()),
@@ -88,20 +94,20 @@ app.post(`${prefix}/videos`, (req: Request, res: Response) => {
     }
 })
 
-app.delete(`${prefix}/videos/:id`, (req: Request, res: Response) => {
-    const id = Number(req.params.id)
-    const index = videos.findIndex(video => video.id === id)
+app.delete(`/videos/:id`, (req: Request, res: Response) => {
+    const id: number = Number(req.params.id)
+    const index: number = videos.findIndex(video => video.id === id)
 
     if (index === -1) {
-        res.status(404)
+        res.sendStatus(404)
     } else {
         videos.splice(index, 1)
-        res.status(204)
+        res.sendStatus(204)
     }
 })
 
-app.put(`${prefix}/videos/:id`, (req: Request, res: Response) => {
-    const id = Number(req.params.id)
+app.put(`/videos/:id`, (req: Request, res: Response) => {
+    const id: number = Number(req.params.id)
     const video = videos.find(video => video.id === id)
 
     if (!video) {
@@ -112,12 +118,12 @@ app.put(`${prefix}/videos/:id`, (req: Request, res: Response) => {
     }
 })
 
-app.get(`${prefix}/videos`, (req: Request, res: Response) => {
+app.get(`/videos`, (req: Request, res: Response) => {
     res.status(200)
     res.send(videos)
 })
 
-app.get(`${prefix}/videos/:id`, (req: Request, res: Response) => {
+app.get(`/videos/:id`, (req: Request, res: Response) => {
     const video = videos.find(video => video.id === Number(req.params.id))
 
     if (!video) {
@@ -129,8 +135,7 @@ app.get(`${prefix}/videos/:id`, (req: Request, res: Response) => {
 })
 
 // Posts
-
-app.post(`${postsPrefix}/posts`, (req: Request, res: Response) => {
+app.post(`/posts`, (req: Request, res: Response) => {
     if (req.body.title) {
         const idd = Math.random() * 2
         const newPost = {
@@ -157,9 +162,9 @@ app.post(`${postsPrefix}/posts`, (req: Request, res: Response) => {
     }
 })
 
-app.delete(`${postsPrefix}/posts/:id`, (req: Request, res: Response) => {
+app.delete(`/posts/:id`, (req: Request, res: Response) => {
     const id = Number(req.params.id)
-    const index = videos.findIndex(post => post.id === id)
+    const index = posts.findIndex(post => post.id === id)
 
     if (index === -1) {
         res.sendStatus(404)
@@ -169,10 +174,9 @@ app.delete(`${postsPrefix}/posts/:id`, (req: Request, res: Response) => {
     }
 })
 
-app.put(`${postsPrefix}/posts/:id`, (req: Request, res: Response) => {
+app.put(`/posts/:id`, (req: Request, res: Response) => {
     const id = Number(req.params.id)
     const post = posts.find(post => post.id === id)
-    console.log(id, post);
 
     if (!post) {
         res.sendStatus(400)
@@ -185,12 +189,12 @@ app.put(`${postsPrefix}/posts/:id`, (req: Request, res: Response) => {
     }
 })
 
-app.get(`${postsPrefix}/posts`, (req: Request, res: Response) => {
+app.get(`/posts`, (req: Request, res: Response) => {
     res.status(200)
     res.send(posts)
 })
 
-app.get(`${postsPrefix}/posts/:id`, (req: Request, res: Response) => {
+app.get(`/posts/:id`, (req: Request, res: Response) => {
     const id = Number(req.params.id)
     const post = posts.find(post => post.id === id)
 
@@ -203,8 +207,7 @@ app.get(`${postsPrefix}/posts/:id`, (req: Request, res: Response) => {
 })
 
 // Bloggers
-
-app.post(`${postsPrefix}/bloggers`, (req: Request, res: Response) => {
+app.post(`/bloggers`, (req: Request, res: Response) => {
     if (req.body.name && req.body.youtubeUrl) {
         const idd = Math.random() * 2
         const newBlogger = {
@@ -228,9 +231,9 @@ app.post(`${postsPrefix}/bloggers`, (req: Request, res: Response) => {
     }
 })
 
-app.delete(`${postsPrefix}/bloggers/:id`, (req: Request, res: Response) => {
-    const id = Number(req.params.id)
-    const index = bloggers.findIndex(blogger => blogger.id === id)
+app.delete(`/bloggers/:id`, (req: Request, res: Response) => {
+    const id: number = Number(req.params.id)
+    const index: number = bloggers.findIndex(post => post.id === id)
 
     if (index === -1) {
         res.sendStatus(404)
@@ -240,7 +243,7 @@ app.delete(`${postsPrefix}/bloggers/:id`, (req: Request, res: Response) => {
     }
 })
 
-app.put(`${postsPrefix}/bloggers/:id`, (req: Request, res: Response) => {
+app.put(`/bloggers/:id`, (req: Request, res: Response) => {
     const id = Number(req.params.id)
     const blogger = bloggers.find(blogger => blogger.id === id)
 
@@ -253,12 +256,12 @@ app.put(`${postsPrefix}/bloggers/:id`, (req: Request, res: Response) => {
     }
 })
 
-app.get(`${postsPrefix}/bloggers`, (req: Request, res: Response) => {
+app.get(`/bloggers`, (req: Request, res: Response) => {
     res.status(200)
     res.send(bloggers)
 })
 
-app.get(`${postsPrefix}/bloggers/:id`, (req: Request, res: Response) => {
+app.get(`/bloggers/:id`, (req: Request, res: Response) => {
     const id = Number(req.params.id)
     const blogger = bloggers.find(blogger => blogger.id === id)
 
