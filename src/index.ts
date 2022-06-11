@@ -112,11 +112,31 @@ app.delete(`/videos/:id`, (req: Request, res: Response) => {
 
 app.put(`/videos/:id`, (req: Request, res: Response) => {
     if ("id" in req.params) {
+        if (req.body.title.length > 40) {
+            res.status(400).json({
+                "errorsMessages": [
+                    {
+                        "message": "The Title field length > 40.",
+                        "field": "title"
+                    }
+                ]
+            })
+        }
+        if (typeof req.body.title === 'string' || req.body.title instanceof String) {
+            res.status(400).json({
+                "errorsMessages": [
+                    {
+                        "message": "The Title field has been string",
+                        "field": "title"
+                    }
+                ]
+            })
+        }
         const id: number = Number(req.params.id)
         const video = videos.find(video => video.id === id)
 
         if (!video) {
-            res.status(400)
+            res.sendStatus(404)
         } else {
             video.title = req.body.title
             res.status(204).send(video)
