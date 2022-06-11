@@ -122,7 +122,7 @@ app.put(`/videos/:id`, (req: Request, res: Response) => {
                 ]
             })
         }
-        if (typeof req.body.title === 'string' || req.body.title instanceof String) {
+        if (typeof req.body.title !== 'string') {
             res.status(400).json({
                 "errorsMessages": [
                     {
@@ -157,8 +157,7 @@ app.get(`/videos/:id`, (req: Request, res: Response) => {
         const video = videos.find(video => video.id === Number(req.params.id))
 
         if (!video) {
-            res.status(404)
-            // res.send("If video for passed id doesn't exist")
+            res.sendStatus(404)
         } else {
             res.status(200).send(video)
         }
