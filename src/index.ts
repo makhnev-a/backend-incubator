@@ -1,5 +1,6 @@
 import express, {Request, Response} from "express";
 import cors from "cors"
+import bodyParser from "body-parser";
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -7,7 +8,8 @@ const prefix = '/lesson_01/api'
 const postsPrefix = '/hs_01/api'
 
 app.use(cors())
-app.use(express.json())
+// app.use(express.json())
+app.use(bodyParser.json())
 
 interface IVideo {
     id: number
@@ -74,8 +76,10 @@ app.get('/', (req: Request, res: Response) => {
 
 // videos
 app.post(`/videos`, (req: Request, res: Response) => {
+    console.log(req)
+
     if (req.body.title) {
-        if (req.body.title.length > 40) {
+        if (req.body.title.length < 40) {
             const newVideo = {
                 id: +(new Date()),
                 title: req.body.title,
