@@ -75,13 +75,24 @@ app.get('/', (req: Request, res: Response) => {
 // videos
 app.post(`/videos`, (req: Request, res: Response) => {
     if (req.body.title) {
-        const newVideo = {
-            id: +(new Date()),
-            title: req.body.title,
-            author: 'it-incubator.ru'
+        if (req.body.title.length > 40) {
+            const newVideo = {
+                id: +(new Date()),
+                title: req.body.title,
+                author: 'it-incubator.ru'
+            }
+            videos.push(newVideo)
+            res.status(201).send(newVideo)
+        } else {
+            res.status(400).json({
+                "errorsMessages": [
+                    {
+                        "message": "The Title field length max 40 chars.",
+                        "field": "title"
+                    }
+                ]
+            })
         }
-        videos.push(newVideo)
-        res.status(201).send(newVideo)
     } else {
         res.status(400).json({
             "errorsMessages": [
@@ -112,16 +123,6 @@ app.delete(`/videos/:id`, (req: Request, res: Response) => {
 
 app.put(`/videos/:id`, (req: Request, res: Response) => {
     if ("id" in req.params) {
-        if (req.body.title.length > 40) {
-            res.status(400).json({
-                "errorsMessages": [
-                    {
-                        "message": "The Title field length > 40.",
-                        "field": "title"
-                    }
-                ]
-            })
-        }
         if (typeof req.body.title !== 'string') {
             res.status(400).json({
                 "errorsMessages": [
@@ -131,7 +132,21 @@ app.put(`/videos/:id`, (req: Request, res: Response) => {
                     }
                 ]
             })
+            return
         }
+
+        if (req.body.title.length > 40) {
+            res.status(400).json({
+                "errorsMessages": [
+                    {
+                        "message": "The Title field length > 40.",
+                        "field": "title"
+                    }
+                ]
+            })
+            return
+        }
+
         const id: number = Number(req.params.id)
         const video = videos.find(video => video.id === id)
 
