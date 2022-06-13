@@ -11,10 +11,9 @@ app.use(cors())
 // app.use(express.json())
 app.use(bodyParser.json())
 
-interface IVideo {
-    id: number
-    title: string
-    author: string
+interface IBloggersError {
+    message: string
+    field: string
 }
 
 const videos = [
@@ -309,9 +308,20 @@ app.put(`/bloggers/:id`, (req: Request, res: Response) => {
     if (!blogger) {
         res.sendStatus(400)
     } else {
-        blogger.name = req.body.name
-        blogger.youtubeUrl = req.body.youtubeUrl
-        res.status(204)
+        if ("name" in req.body && "youtubeUrl" in req.body) {
+            blogger.name = req.body.name
+            blogger.youtubeUrl = req.body.youtubeUrl
+            res.status(201).send(blogger)
+        } else {
+            res.status(400).send({
+                errorsMessages: [
+                    {
+                        message: "bloggers name and youtubeUrl has been required",
+                        field: "name"
+                    }
+                ]
+            })
+        }
     }
 })
 
