@@ -362,7 +362,7 @@ app.post(`/bloggers`, (req: Request, res: Response) => {
                 "field": "youtubeUrl"
             })
         }
-        if (req.body.youtubeUrl.lenght > 100) {
+        if (req.body.youtubeUrl.length > 100) {
             errors.push({
                 "message": "youtubeUrl length > 100 chars",
                 "field": "youtubeUrl"
