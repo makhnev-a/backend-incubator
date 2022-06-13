@@ -216,7 +216,7 @@ app.post(`/posts`, (req: Request, res: Response) => {
                 field: "shortDescription"
             })
         } else {
-            if (shortDescriptionTrim.lenght > 100) {
+            if (shortDescriptionTrim.length > 100) {
                 errors.push({
                     message: "shortDescription length > 100 chars",
                     field: "shortDescription"
