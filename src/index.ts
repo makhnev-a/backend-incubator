@@ -234,7 +234,7 @@ app.put(`/posts/:id`, (req: Request, res: Response) => {
     const post = posts.find(post => post.id === id)
 
     if (!post) {
-        res.sendStatus(400)
+        res.sendStatus(404)
     } else {
         post.title = req.body.title
         post.content = req.body.content
