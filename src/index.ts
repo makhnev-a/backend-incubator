@@ -232,6 +232,34 @@ app.delete(`/posts/:id`, (req: Request, res: Response) => {
 app.put(`/posts/:id`, (req: Request, res: Response) => {
     const id = Number(req.params.id)
     const post = posts.find(post => post.id === id)
+    let errors = []
+
+    if (req.body.title.length > 30) {
+        errors.push({
+            message: "title length > 30 chars",
+            field: "title"
+        })
+    }
+
+    if (req.body.shortDescription > 100) {
+        errors.push({
+            message: "shortDescription length > 100 chars",
+            field: "shortDescription"
+        })
+    }
+
+    if (req.body.content > 1000) {
+        errors.push({
+            message: "content length > 1000 chars",
+            field: "content"
+        })
+    }
+
+    if (errors.length > 0) {
+        res.status(400).send({
+            errorsMessages: errors
+        })
+    }
 
     if (!post) {
         res.sendStatus(404)
