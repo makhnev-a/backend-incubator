@@ -186,7 +186,7 @@ app.get(`/videos/:id`, (req: Request, res: Response) => {
 // Posts
 app.post(`/posts`, (req: Request, res: Response) => {
     if (req.body.title) {
-        const idd = Math.random() * 2
+        const idd = Number(new Date())
         const newPost = {
             id: idd,
             title: req.body.title,
@@ -269,15 +269,14 @@ app.get(`/posts/:id`, (req: Request, res: Response) => {
 // Bloggers
 app.post(`/bloggers`, (req: Request, res: Response) => {
     if (req.body.name && req.body.youtubeUrl) {
-        const idd = Math.random() * 2
+        const idd = Math.random() * 100
         const newBlogger = {
             id: idd,
             name: req.body.name,
             youtubeUrl: req.body.youtubeUrl,
         }
         bloggers.push(newBlogger)
-        res.sendStatus(201)
-        res.send(newBlogger)
+        res.status(201).send(newBlogger)
     } else {
         res.sendStatus(400)
         res.send({
