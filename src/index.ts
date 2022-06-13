@@ -341,7 +341,15 @@ app.post(`/bloggers`, (req: Request, res: Response) => {
     const regexpURL = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
 
     if ("name" in req.body) {
-        if (req.body.name.length > 15) {
+        const nameTrim = req.body.name.trim()
+
+        if (nameTrim.length === 0) {
+            errors.push({
+                "message": "name not required",
+                "field": "name"
+            })
+        }
+        if (nameTrim.length > 15) {
             errors.push({
                 "message": "name length > 15",
                 "field": "name"
@@ -356,13 +364,21 @@ app.post(`/bloggers`, (req: Request, res: Response) => {
 
 
     if ("youtubeUrl" in req.body) {
-        if (!regexpURL.test(req.body.youtubeUrl)) {
+        const urlTrim = req.body.youtubeUrl.trim()
+
+        if (urlTrim.length === 0) {
+            errors.push({
+                "message": "youtubeUrl not reqiured",
+                "field": "youtubeUrl"
+            })
+        }
+        if (!regexpURL.test(urlTrim)) {
             errors.push({
                 "message": "youtubeUrl bad url",
                 "field": "youtubeUrl"
             })
         }
-        if (req.body.youtubeUrl.length > 100) {
+        if (urlTrim.length > 100) {
             errors.push({
                 "message": "youtubeUrl length > 100 chars",
                 "field": "youtubeUrl"
