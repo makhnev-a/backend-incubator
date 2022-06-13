@@ -337,7 +337,31 @@ app.get(`/posts/:id`, (req: Request, res: Response) => {
 
 // Bloggers
 app.post(`/bloggers`, (req: Request, res: Response) => {
-    if (req.body.name && req.body.youtubeUrl) {
+    if ("name" in req.body && "youtubeUrl" in req.body) {
+        let errors = []
+        const regexpURL = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
+
+        if (req.body.name.length > 15) {
+            errors.push({
+                "message": "name length > 15",
+                "field": "name"
+            })
+        }
+
+        if (!regexpURL.test(req.body.youtubeUrl)) {
+            errors.push({
+                "message": "youtubeUrl bad url",
+                "field": "youtubeUrl"
+            })
+        }
+
+        if (errors.length > 0) {
+            res.status(400).send({
+                errorsMessages: errors
+            })
+            return
+        }
+
         const idd = Math.random() * 100
         const newBlogger = {
             id: idd,
