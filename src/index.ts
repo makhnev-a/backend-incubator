@@ -241,17 +241,24 @@ app.put(`/posts/:id`, (req: Request, res: Response) => {
         })
     }
 
-    if (req.body.shortDescription > 100) {
+    if (req.body.shortDescription.lenght > 100) {
         errors.push({
             message: "shortDescription length > 100 chars",
             field: "shortDescription"
         })
     }
 
-    if (req.body.content > 1000) {
+    if (req.body.content.length > 1000) {
         errors.push({
             message: "content length > 1000 chars",
             field: "content"
+        })
+    }
+
+    if (typeof req.body.bloggerId !== "number") {
+        errors.push({
+            message: "bloggerId is not a number",
+            field: "bloggerId"
         })
     }
 
