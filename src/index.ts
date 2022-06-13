@@ -340,19 +340,35 @@ app.post(`/bloggers`, (req: Request, res: Response) => {
     let errors = []
     const regexpURL = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
 
-    if (req.body.name.length > 15) {
+    if ("name" in req.body) {
+        if (req.body.name.length > 15) {
+            errors.push({
+                "message": "name length > 15",
+                "field": "name"
+            })
+        }
+    } else {
         errors.push({
-            "message": "name length > 15",
+            "message": "field name not found",
             "field": "name"
         })
     }
 
-    if (!regexpURL.test(req.body.youtubeUrl)) {
+
+    if ("youtubeUrl" in req.body) {
+        if (!regexpURL.test(req.body.youtubeUrl)) {
+            errors.push({
+                "message": "youtubeUrl bad url",
+                "field": "youtubeUrl"
+            })
+        }
+    } else {
         errors.push({
-            "message": "youtubeUrl bad url",
+            "message": "field youtubeUrl not found",
             "field": "youtubeUrl"
         })
     }
+
 
     if (errors.length > 0) {
         res.status(400).send({
