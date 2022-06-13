@@ -254,7 +254,7 @@ app.get(`/posts/:id`, (req: Request, res: Response) => {
         const post = posts.find(post => post.id === id)
 
         if (!post) {
-            res.sendStatus(400)
+            res.sendStatus(404)
         } else {
             res.send(post)
         }
