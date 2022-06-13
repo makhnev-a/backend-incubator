@@ -209,8 +209,8 @@ app.post(`/posts`, (req: Request, res: Response) => {
     }
 
     if ("shortDescription" in req.body) {
-        const shortDescriptionTrim = req.body.title.trim()
-        if (shortDescriptionTrim.lenght === 0) {
+        const shortDescriptionTrim = req.body.shortDescription.trim()
+        if (shortDescriptionTrim.length === 0) {
             errors.push({
                 message: "shortDescription has been required",
                 field: "shortDescription"
@@ -231,7 +231,7 @@ app.post(`/posts`, (req: Request, res: Response) => {
     }
 
     if ("content" in req.body) {
-        const contentTrim = req.body.title.trim()
+        const contentTrim = req.body.content.trim()
         if (contentTrim.length === 0) {
             errors.push({
                 message: "content has been required",
