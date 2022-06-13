@@ -190,8 +190,8 @@ app.post(`/posts`, (req: Request, res: Response) => {
         const titleTrim = req.body.title.trim()
         if (titleTrim.length === 0) {
             errors.push({
-                message: "shortDescription has been required",
-                field: "shortDescription"
+                message: "title has been required",
+                field: "title"
             })
         } else {
             if (titleTrim.length > 30) {
