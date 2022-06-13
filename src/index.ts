@@ -212,9 +212,14 @@ app.delete(`/posts/:id`, (req: Request, res: Response) => {
     if ("id" in req.params) {
         const id = Number(req.params.id)
         const index = posts.findIndex(post => post.id === id)
+        const post = posts.find(post => post.id === id)
+
+        if (!post) {
+            res.sendStatus(400)
+        }
 
         if (index === -1) {
-            res.sendStatus(400)
+            res.sendStatus(404)
         } else {
             posts.splice(index, 1)
             res.sendStatus(204)
