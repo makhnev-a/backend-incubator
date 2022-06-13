@@ -184,32 +184,84 @@ app.get(`/videos/:id`, (req: Request, res: Response) => {
 
 // Posts
 app.post(`/posts`, (req: Request, res: Response) => {
-    let errors = []
+    let errors: { message: string; field: string; }[] = []
 
-    if (req.body.title.length > 30) {
+    if ("title" in req.body) {
+        const titleTrim = req.body.title.trim()
+        if (titleTrim.length === 0) {
+            errors.push({
+                message: "shortDescription has been required",
+                field: "shortDescription"
+            })
+        } else {
+            if (titleTrim.length > 30) {
+                errors.push({
+                    message: "title length > 30 chars",
+                    field: "title"
+                })
+            }
+        }
+    } else {
         errors.push({
-            message: "title length > 30 chars",
+            message: "title not found",
             field: "title"
         })
     }
 
-    if (req.body.shortDescription.lenght > 100) {
+    if ("shortDescription" in req.body) {
+        const shortDescriptionTrim = req.body.title.trim()
+        if (shortDescriptionTrim.lenght === 0) {
+            errors.push({
+                message: "shortDescription has been required",
+                field: "shortDescription"
+            })
+        } else {
+            if (shortDescriptionTrim.lenght > 100) {
+                errors.push({
+                    message: "shortDescription length > 100 chars",
+                    field: "shortDescription"
+                })
+            }
+        }
+    } else {
         errors.push({
-            message: "shortDescription length > 100 chars",
+            message: "shortDescription not found",
             field: "shortDescription"
         })
     }
 
-    if (req.body.content.length > 1000) {
+    if ("content" in req.body) {
+        const contentTrim = req.body.title.trim()
+        if (contentTrim.length === 0) {
+            errors.push({
+                message: "content has been required",
+                field: "content"
+            })
+        } else {
+            if (contentTrim.length > 1000) {
+                errors.push({
+                    message: "content length > 1000 chars",
+                    field: "content"
+                })
+            }
+        }
+    } else {
         errors.push({
-            message: "content length > 1000 chars",
+            message: "content not found",
             field: "content"
         })
     }
 
-    if (typeof req.body.bloggerId !== "number") {
+    if ("bloggerId" in req.body) {
+        if (typeof req.body.bloggerId !== "number") {
+            errors.push({
+                message: "bloggerId is not a number",
+                field: "bloggerId"
+            })
+        }
+    } else {
         errors.push({
-            message: "bloggerId is not a number",
+            message: "bloggerId not found",
             field: "bloggerId"
         })
     }
@@ -408,20 +460,6 @@ app.post(`/bloggers`, (req: Request, res: Response) => {
     }
     bloggers.push(newBlogger)
     res.status(201).send(newBlogger)
-
-    // if ("name" in req.body && "youtubeUrl" in req.body) {
-    //
-    // } else {
-    //     res.sendStatus(400)
-    //     res.send({
-    //         "errorsMessages": [
-    //             {
-    //                 "message": "The Name & YoutubeUrl field is required.",
-    //                 "field": "Name, YoutubeUrl"
-    //             }
-    //         ]
-    //     })
-    // }
 })
 
 app.delete(`/bloggers/:id`, (req: Request, res: Response) => {
