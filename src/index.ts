@@ -306,12 +306,12 @@ app.put(`/bloggers/:id`, (req: Request, res: Response) => {
     const blogger = bloggers.find(blogger => blogger.id === id)
 
     if (!blogger) {
-        res.sendStatus(400)
+        res.sendStatus(404)
     } else {
         if ("name" in req.body && "youtubeUrl" in req.body) {
             blogger.name = req.body.name
             blogger.youtubeUrl = req.body.youtubeUrl
-            res.status(201).send(blogger)
+            res.sendStatus(204)
         } else {
             res.status(400).send({
                 errorsMessages: [
