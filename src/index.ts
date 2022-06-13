@@ -371,18 +371,19 @@ app.post(`/bloggers`, (req: Request, res: Response) => {
                 "message": "youtubeUrl not reqiured",
                 "field": "youtubeUrl"
             })
-        }
-        if (!regexpURL.test(urlTrim)) {
-            errors.push({
-                "message": "youtubeUrl bad url",
-                "field": "youtubeUrl"
-            })
-        }
-        if (urlTrim.length > 100) {
-            errors.push({
-                "message": "youtubeUrl length > 100 chars",
-                "field": "youtubeUrl"
-            })
+        } else {
+            if (!regexpURL.test(urlTrim)) {
+                errors.push({
+                    "message": "youtubeUrl bad url",
+                    "field": "youtubeUrl"
+                })
+            }
+            if (urlTrim.length > 100) {
+                errors.push({
+                    "message": "youtubeUrl length > 100 chars",
+                    "field": "youtubeUrl"
+                })
+            }
         }
     } else {
         errors.push({
