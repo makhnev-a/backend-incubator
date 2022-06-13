@@ -259,6 +259,13 @@ app.post(`/posts`, (req: Request, res: Response) => {
                 field: "bloggerId"
             })
         }
+        const post = posts.find(post => post.id === req.body.bloggerId)
+        if (!post) {
+            errors.push({
+                message: "bloggerId is not defined",
+                field: "bloggerId"
+            })
+        }
     } else {
         errors.push({
             message: "bloggerId not found",
