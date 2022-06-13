@@ -184,7 +184,7 @@ app.get(`/videos/:id`, (req: Request, res: Response) => {
 
 // Posts
 app.post(`/posts`, (req: Request, res: Response) => {
-    if (req.body.title) {
+    if (req.body.title && req.body.shortDescription && req.body.content && req.body.bloggerId) {
         const idd = Number(new Date())
         const newPost = {
             id: idd,
@@ -195,15 +195,13 @@ app.post(`/posts`, (req: Request, res: Response) => {
             bloggerName: "Andrey Makhnev",
         }
         posts.push(newPost)
-        res.sendStatus(201)
-        res.send(newPost)
+        res.status(201).send(newPost)
     } else {
-        res.sendStatus(400)
-        res.send({
+        res.status(400).send({
             "errorsMessages": [
                 {
-                    "message": "The Title field is required.",
-                    "field": "title"
+                    "message": "The all fields has been required.",
+                    "field": "title, shortDescription, content, bloggerId"
                 }
             ]
         })
