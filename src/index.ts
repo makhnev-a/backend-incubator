@@ -184,6 +184,42 @@ app.get(`/videos/:id`, (req: Request, res: Response) => {
 
 // Posts
 app.post(`/posts`, (req: Request, res: Response) => {
+    let errors = []
+
+    if (req.body.title.length > 30) {
+        errors.push({
+            message: "title length > 30 chars",
+            field: "title"
+        })
+    }
+
+    if (req.body.shortDescription.lenght > 100) {
+        errors.push({
+            message: "shortDescription length > 100 chars",
+            field: "shortDescription"
+        })
+    }
+
+    if (req.body.content.length > 1000) {
+        errors.push({
+            message: "content length > 1000 chars",
+            field: "content"
+        })
+    }
+
+    if (typeof req.body.bloggerId !== "number") {
+        errors.push({
+            message: "bloggerId is not a number",
+            field: "bloggerId"
+        })
+    }
+
+    if (errors.length > 0) {
+        res.status(400).send({
+            errorsMessages: errors
+        })
+    }
+
     if (req.body.title && req.body.shortDescription && req.body.content && req.body.bloggerId) {
         const idd = Number(new Date())
         const newPost = {
