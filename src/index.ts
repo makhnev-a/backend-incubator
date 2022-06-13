@@ -76,8 +76,6 @@ app.get('/', (req: Request, res: Response) => {
 
 // videos
 app.post(`/videos`, (req: Request, res: Response) => {
-    console.log(req)
-
     if (req.body.title) {
         if (req.body.title.length < 40) {
             const newVideo = {
@@ -214,14 +212,18 @@ app.post(`/posts`, (req: Request, res: Response) => {
 })
 
 app.delete(`/posts/:id`, (req: Request, res: Response) => {
-    const id = Number(req.params.id)
-    const index = posts.findIndex(post => post.id === id)
+    if ("id" in req.params) {
+        const id = Number(req.params.id)
+        const index = posts.findIndex(post => post.id === id)
 
-    if (index === -1) {
-        res.sendStatus(404)
+        if (index === -1) {
+            res.sendStatus(404)
+        } else {
+            posts.splice(index, 1)
+            res.sendStatus(204)
+        }
     } else {
-        posts.splice(index, 1)
-        res.sendStatus(204)
+        res.sendStatus(404)
     }
 })
 
@@ -241,20 +243,27 @@ app.put(`/posts/:id`, (req: Request, res: Response) => {
 })
 
 app.get(`/posts`, (req: Request, res: Response) => {
-    res.status(200)
-    res.send(posts)
+    res.status(200).send(posts)
 })
 
 app.get(`/posts/:id`, (req: Request, res: Response) => {
-    const id = Number(req.params.id)
-    const post = posts.find(post => post.id === id)
+    if ("id" in req.params) {
+        if (typeof req.params.id !== "string") {
+            res.sendStatus(400)
+        } else {
+            const id = Number(req.params.id)
+            const post = posts.find(post => post.id === id)
 
-    if (!post) {
-        res.sendStatus(404)
-        res.send()
+            if (!post) {
+                res.sendStatus(404)
+            } else {
+                res.send(post)
+            }
+        }
     } else {
-        res.send(post)
+        res.sendStatus(400)
     }
+
 })
 
 // Bloggers
