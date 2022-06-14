@@ -405,11 +405,20 @@ app.put(`/posts/:id`, (req: Request, res: Response) => {
         }
 
         if ("bloggerId" in req.body) {
-            if (typeof req.body.bloggerId !== "number") {
+            const blogger = bloggers.find(blogger => blogger.id === req.body.bloggerId)
+
+            if (!blogger) {
                 errors.push({
-                    message: "bloggerId is not a number",
+                    message: "blogger not found",
                     field: "bloggerId"
                 })
+            } else {
+                if (typeof req.body.bloggerId !== "number") {
+                    errors.push({
+                        message: "bloggerId is not a number",
+                        field: "bloggerId"
+                    })
+                }
             }
         } else {
             errors.push({
