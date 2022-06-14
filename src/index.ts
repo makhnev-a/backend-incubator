@@ -253,6 +253,8 @@ app.post(`/posts`, (req: Request, res: Response) => {
     }
 
     if ("bloggerId" in req.body) {
+        // const newBloggerId = Math.round(req.body.bloggerId)
+
         if (typeof req.body.bloggerId !== "number") {
             errors.push({
                 message: "bloggerId is not a number",
@@ -485,23 +487,64 @@ app.delete(`/bloggers/:id`, (req: Request, res: Response) => {
 app.put(`/bloggers/:id`, (req: Request, res: Response) => {
     const id = Number(req.params.id)
     const blogger = bloggers.find(blogger => blogger.id === id)
+    const regexpURL = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
+    let errors = []
 
     if (!blogger) {
         res.sendStatus(404)
     } else {
-        if ("name" in req.body && "youtubeUrl" in req.body) {
-            blogger.name = req.body.name
-            blogger.youtubeUrl = req.body.youtubeUrl
-            res.sendStatus(204)
+        if ("name" in req.body) {
+            const newName = req.body.name.trim()
+            if (newName.length > 15) {
+                errors.push({
+                    message: "name field length > 15 chars",
+                    field: "name"
+                })
+            } else {
+                blogger.name = newName
+            }
+        } else {
+            errors.push({
+                message: "name field is not defined",
+                field: "name"
+            })
+        }
+
+        if ("youtubeUrl" in req.body) {
+            const newYoutubeUrl = req.body.youtubeUrl.trim()
+            if (regexpURL.test(newYoutubeUrl)) {
+                if (newYoutubeUrl.length > 100) {
+                    errors.push({
+                        message: "youtubeUrl length > 100 chars",
+                        field: "youtubeUrl"
+                    })
+                } else {
+                blogger.youtubeUrl = newYoutubeUrl
+                }
+            } else {
+                errors.push({
+                    message: "youtubeUrl regex error",
+                    field: "youtubeUrl"
+                })
+            }
+
         } else {
             res.status(400).send({
                 errorsMessages: [
                     {
-                        message: "bloggers name and youtubeUrl has been required",
-                        field: "name"
+                        message: "youtubeUrl is not defined",
+                        field: "youtubeUrl"
                     }
                 ]
             })
+        }
+
+        if (errors.length > 0) {
+            res.status(400).send({
+                errorsMessages: errors
+            })
+        } else {
+            res.sendStatus(204)
         }
     }
 })
