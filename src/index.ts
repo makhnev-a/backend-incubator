@@ -332,43 +332,98 @@ app.put(`/posts/:id`, (req: Request, res: Response) => {
     const post = posts.find(post => post.id === id)
     let errors = []
 
-    if (req.body.title.length > 30) {
-        errors.push({
-            message: "title length > 30 chars",
-            field: "title"
-        })
-    }
-
-    if (req.body.shortDescription.lenght > 100) {
-        errors.push({
-            message: "shortDescription length > 100 chars",
-            field: "shortDescription"
-        })
-    }
-
-    if (req.body.content.length > 1000) {
-        errors.push({
-            message: "content length > 1000 chars",
-            field: "content"
-        })
-    }
-
-    if (typeof req.body.bloggerId !== "number") {
-        errors.push({
-            message: "bloggerId is not a number",
-            field: "bloggerId"
-        })
-    }
-
-    if (errors.length > 0) {
-        res.status(400).send({
-            errorsMessages: errors
-        })
-    }
-
     if (!post) {
         res.sendStatus(404)
     } else {
+        if ("title" in req.body) {
+            const newTitle = req.body.title.trim()
+
+            if (newTitle.length === 0) {
+                errors.push({
+                    message: "title has been required",
+                    field: "title"
+                })
+            } else {
+                if (newTitle.length > 30) {
+                    errors.push({
+                        message: "title length > 30 chars",
+                        field: "title"
+                    })
+                }
+            }
+        } else {
+            errors.push({
+                message: "title is not defined",
+                field: "title"
+            })
+        }
+
+        if ("shortDescription" in req.body) {
+            const newShortDescription = req.body.shortDescription.trim()
+
+            if (newShortDescription.length === 0) {
+                errors.push({
+                    message: "shortDescription has been required",
+                    field: "shortDescription"
+                })
+            } else {
+                if (newShortDescription.length > 100) {
+                    errors.push({
+                        message: "shortDescription length > 100 chars",
+                        field: "shortDescription"
+                    })
+                }
+            }
+        } else {
+            errors.push({
+                message: "shortDescription is not defined",
+                field: "shortDescription"
+            })
+        }
+
+        if ("content" in req.body) {
+            const newContent = req.body.content.trim()
+
+            if (newContent.length === 0) {
+                errors.push({
+                    message: "content has been required",
+                    field: "content"
+                })
+            } else {
+                if (newContent.length > 1000) {
+                    errors.push({
+                        message: "content length > 1000 chars",
+                        field: "content"
+                    })
+                }
+            }
+        } else {
+            errors.push({
+                message: "content is not defined",
+                field: "content"
+            })
+        }
+
+        if ("bloggerId" in req.body) {
+            if (typeof req.body.bloggerId !== "number") {
+                errors.push({
+                    message: "bloggerId is not a number",
+                    field: "bloggerId"
+                })
+            }
+        } else {
+            errors.push({
+                message: "bloggerId is not defined",
+                field: "bloggerId"
+            })
+        }
+
+        if (errors.length > 0) {
+            res.status(400).send({
+                errorsMessages: errors
+            })
+        }
+
         post.title = req.body.title
         post.content = req.body.content
         post.bloggerId = req.body.bloggerId
