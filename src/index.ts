@@ -495,14 +495,22 @@ app.put(`/bloggers/:id`, (req: Request, res: Response) => {
     } else {
         if ("name" in req.body) {
             const newName = req.body.name.trim()
-            if (newName.length > 15) {
+            if (newName.length === 0) {
                 errors.push({
-                    message: "name field length > 15 chars",
+                    message: "name has been required",
                     field: "name"
                 })
             } else {
-                blogger.name = newName
+                if (newName.length > 15) {
+                    errors.push({
+                        message: "name field length > 15 chars",
+                        field: "name"
+                    })
+                } else {
+                    blogger.name = newName
+                }
             }
+
         } else {
             errors.push({
                 message: "name field is not defined",
@@ -512,22 +520,28 @@ app.put(`/bloggers/:id`, (req: Request, res: Response) => {
 
         if ("youtubeUrl" in req.body) {
             const newYoutubeUrl = req.body.youtubeUrl.trim()
-            if (regexpURL.test(newYoutubeUrl)) {
-                if (newYoutubeUrl.length > 100) {
-                    errors.push({
-                        message: "youtubeUrl length > 100 chars",
-                        field: "youtubeUrl"
-                    })
-                } else {
-                blogger.youtubeUrl = newYoutubeUrl
-                }
-            } else {
+            if (newYoutubeUrl.lenght === 0) {
                 errors.push({
-                    message: "youtubeUrl regex error",
+                    message: "youtubeUrl has been required",
                     field: "youtubeUrl"
                 })
+            } else {
+                if (regexpURL.test(newYoutubeUrl)) {
+                    if (newYoutubeUrl.length > 100) {
+                        errors.push({
+                            message: "youtubeUrl length > 100 chars",
+                            field: "youtubeUrl"
+                        })
+                    } else {
+                        blogger.youtubeUrl = newYoutubeUrl
+                    }
+                } else {
+                    errors.push({
+                        message: "youtubeUrl regex error",
+                        field: "youtubeUrl"
+                    })
+                }
             }
-
         } else {
             res.status(400).send({
                 errorsMessages: [
