@@ -253,22 +253,21 @@ app.post(`/posts`, (req: Request, res: Response) => {
     }
 
     if ("bloggerId" in req.body) {
-        // const newBloggerId = Math.round(req.body.bloggerId)
+        const post = posts.find(post => post.id === req.body.bloggerId)
 
-        if (typeof req.body.bloggerId !== "number") {
+        if (!post) {
             errors.push({
-                message: "bloggerId is not a number",
+                message: "post not found",
                 field: "bloggerId"
             })
+        } else {
+            if (typeof req.body.bloggerId !== "number") {
+                errors.push({
+                    message: "bloggerId is not a number",
+                    field: "bloggerId"
+                })
+            }
         }
-        // todo
-        // const post = posts.find(post => post.id === req.body.bloggerId)
-        // if (!post) {
-        //     errors.push({
-        //         message: "bloggerId is not defined",
-        //         field: "bloggerId"
-        //     })
-        // }
     } else {
         errors.push({
             message: "bloggerId not found",
