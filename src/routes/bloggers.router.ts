@@ -1,23 +1,6 @@
 import {Request, Response, Router} from "express";
-import {posts} from "./posts.router";
-
-export const bloggers = [
-    {
-        id: 1,
-        name: "Petr",
-        youtubeUrl: "youtube.com/petrtv"
-    },
-    {
-        id: 2,
-        name: "Ivan",
-        youtubeUrl: "youtube.com/ivantv"
-    },
-    {
-        id: 3,
-        name: "Max",
-        youtubeUrl: "youtube.com/maxtv"
-    },
-]
+import {bloggersRepository} from "../repositories/bloggers.repository";
+import {postsRepository} from "../repositories/posts.repository";
 
 export const bloggersRouter = Router({})
 
@@ -85,31 +68,33 @@ bloggersRouter.post(`/`, (req: Request, res: Response) => {
         return
     }
 
-    const idd = Math.random() * 100
-    const newBlogger = {
-        id: idd,
-        name: req.body.name,
-        youtubeUrl: req.body.youtubeUrl,
-    }
-    bloggers.push(newBlogger)
+    const id = Math.random() * 100
+    bloggersRepository.createBlogger(id, req.body.name, req.body.youtubeUrl)
+    const newBlogger = bloggersRepository.findBloggerById(id)
     res.status(201).send(newBlogger)
 })
 
 bloggersRouter.delete(`/:id`, (req: Request, res: Response) => {
-    const id: number = Number(req.params.id)
-    const index: number = posts.findIndex(post => post.id === id)
+    if ("id" in req.params) {
+        const blogger = bloggersRepository.findBloggerById(+req.params.id)
+        const isDeleted = bloggersRepository.removeBloggerById(+req.params.id)
 
-    if (index === -1) {
-        res.sendStatus(404)
+        if (!blogger) {
+            res.sendStatus(404)
+        }
+
+        if (!isDeleted) {
+            res.sendStatus(404)
+        } else {
+            res.sendStatus(204)
+        }
     } else {
-        bloggers.splice(index, 1)
-        res.sendStatus(204)
+        res.sendStatus(404)
     }
 })
 
 bloggersRouter.put(`/:id`, (req: Request, res: Response) => {
-    const id = Number(req.params.id)
-    const blogger = bloggers.find(blogger => blogger.id === id)
+    const blogger = postsRepository.findPostById(+req.params.id)
     const regexpURL = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
     let errors = []
 
@@ -129,8 +114,6 @@ bloggersRouter.put(`/:id`, (req: Request, res: Response) => {
                         message: "name field length > 15 chars",
                         field: "name"
                     })
-                } else {
-                    blogger.name = newName
                 }
             }
 
@@ -155,8 +138,6 @@ bloggersRouter.put(`/:id`, (req: Request, res: Response) => {
                             message: "youtubeUrl length > 100 chars",
                             field: "youtubeUrl"
                         })
-                    } else {
-                        blogger.youtubeUrl = newYoutubeUrl
                     }
                 } else {
                     errors.push({
@@ -180,20 +161,26 @@ bloggersRouter.put(`/:id`, (req: Request, res: Response) => {
             res.status(400).send({
                 errorsMessages: errors
             })
-        } else {
-            res.sendStatus(204)
         }
+
+        const isUpdated = bloggersRepository.updateBlogger(+req.params.id, req.body.name, req.body.youtubeUrl)
+
+        if (isUpdated) {
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(404)
+        }
+
     }
 })
 
 bloggersRouter.get(`/`, (req: Request, res: Response) => {
-    res.status(200)
-    res.send(bloggers)
+    const bloggers = bloggersRepository.findAllBloggers()
+    res.status(200).send(bloggers)
 })
 
 bloggersRouter.get(`/:id`, (req: Request, res: Response) => {
-    const id = Number(req.params.id)
-    const blogger = bloggers.find(blogger => blogger.id === id)
+    const blogger = bloggersRepository.findBloggerById(+req.params.id)
 
     if (!blogger) {
         res.status(404)

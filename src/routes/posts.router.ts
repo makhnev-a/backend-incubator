@@ -1,32 +1,6 @@
 import {Request, Response, Router} from "express";
-import {bloggers} from "./bloggers.router";
-
-export const posts = [
-    {
-        id: 1,
-        title: "Hello world!",
-        shortDescription: "Description 1",
-        content: "lorem lorem lorem lorem 1",
-        bloggerId: 1,
-        bloggerName: "Petr"
-    },
-    {
-        id: 2,
-        title: "Title by Author!",
-        shortDescription: "Description 2",
-        content: "lorem lorem lorem lorem 2",
-        bloggerId: 2,
-        bloggerName: "Ivan"
-    },
-    {
-        id: 3,
-        title: "Black book",
-        shortDescription: "Description 3",
-        content: "lorem lorem lorem lorem 3",
-        bloggerId: 3,
-        bloggerName: "Max"
-    },
-]
+import {postsRepository} from "../repositories/posts.repository";
+import {bloggersRepository} from "../repositories/bloggers.repository";
 
 export const postsRouter = Router({})
 
@@ -100,7 +74,7 @@ postsRouter.post(`/`, (req: Request, res: Response) => {
     }
 
     if ("bloggerId" in req.body) {
-        const post = bloggers.find(blogger => blogger.id === req.body.bloggerId)
+        const post = bloggersRepository.findBloggerById(+req.body.bloggerId)
 
         if (!post) {
             errors.push({
@@ -129,17 +103,10 @@ postsRouter.post(`/`, (req: Request, res: Response) => {
     }
 
     if (req.body.title && req.body.shortDescription && req.body.content && req.body.bloggerId) {
-        const idd = Number(new Date())
-        const newPost = {
-            id: idd,
-            title: req.body.title,
-            shortDescription: req.body.shortDescription,
-            content: req.body.content,
-            bloggerId: req.body.bloggerId,
-            bloggerName: "Andrey Makhnev",
-        }
-        posts.push(newPost)
-        res.status(201).send(newPost)
+        const id = Number(new Date())
+        postsRepository.createPost(req.body.title, req.body.shortDescription, req.body.content, +req.body.bloggerId, "Andrey Makhnev", id)
+        const post = postsRepository.findPostById(id)
+        res.status(201).send(post)
     } else {
         res.status(400).send({
             "errorsMessages": [
@@ -154,18 +121,16 @@ postsRouter.post(`/`, (req: Request, res: Response) => {
 
 postsRouter.delete(`/:id`, (req: Request, res: Response) => {
     if ("id" in req.params) {
-        const id = Number(req.params.id)
-        const index = posts.findIndex(post => post.id === id)
-        const post = posts.find(post => post.id === id)
+        const post = postsRepository.findPostById(+req.params.id)
+        const isDeleted: boolean = postsRepository.removePostById(+req.params.id)
 
         if (!post) {
             res.sendStatus(404)
         }
 
-        if (index === -1) {
+        if (!isDeleted) {
             res.sendStatus(404)
         } else {
-            posts.splice(index, 1)
             res.sendStatus(204)
         }
     } else {
@@ -174,9 +139,8 @@ postsRouter.delete(`/:id`, (req: Request, res: Response) => {
 })
 
 postsRouter.put(`/:id`, (req: Request, res: Response) => {
-    const id = Number(req.params.id)
-    const post = posts.find(post => post.id === id)
     let errors = []
+    const post = postsRepository.findPostById(+req.params.id)
 
     if (!post) {
         res.sendStatus(404)
@@ -251,7 +215,7 @@ postsRouter.put(`/:id`, (req: Request, res: Response) => {
         }
 
         if ("bloggerId" in req.body) {
-            const blogger = bloggers.find(blogger => blogger.id === req.body.bloggerId)
+            const blogger = bloggersRepository.findBloggerById(+req.body.bloggerId)
 
             if (!blogger) {
                 errors.push({
@@ -279,22 +243,25 @@ postsRouter.put(`/:id`, (req: Request, res: Response) => {
             })
         }
 
-        post.title = req.body.title
-        post.content = req.body.content
-        post.bloggerId = req.body.bloggerId
-        post.shortDescription = req.body.shortDescription
-        res.sendStatus(204)
+        const isUpdated = postsRepository.updatePost(+req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
+
+        if (isUpdated) {
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(404)
+        }
+
     }
 })
 
 postsRouter.get(`/`, (req: Request, res: Response) => {
+    const posts = postsRepository.findAllPosts()
     res.status(200).send(posts)
 })
 
 postsRouter.get(`/:id`, (req: Request, res: Response) => {
     if ("id" in req.params) {
-        const id = Number(req.params.id)
-        const post = posts.find(post => post.id === id)
+        const post = postsRepository.findPostById(+req.params.id)
 
         if (!post) {
             res.sendStatus(404)
@@ -304,5 +271,4 @@ postsRouter.get(`/:id`, (req: Request, res: Response) => {
     } else {
         res.sendStatus(400)
     }
-
 })
