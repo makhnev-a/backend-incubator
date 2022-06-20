@@ -26,7 +26,7 @@ export const bloggersRepository = {
     removeBloggerById(id: number) {
         for (let i: number = 0; i < bloggers.length; i++) {
             if (bloggers[i].id === id) {
-                bloggers.slice(i, 1)
+                bloggers.splice(i, 1)
                 return true
             }
         }

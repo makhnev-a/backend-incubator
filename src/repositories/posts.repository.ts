@@ -35,7 +35,7 @@ export const postsRepository = {
     removePostById(id: number) {
         for (let i: number = 0; i < posts.length; i++) {
             if (posts[i].id === id) {
-                posts.slice(i, 1)
+                posts.splice(i, 1)
                 return true
             }
         }

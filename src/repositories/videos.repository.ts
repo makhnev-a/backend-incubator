@@ -16,7 +16,7 @@ export const videosRepository = {
     removeVideoById(id: number) {
         for (let i: number = 0; i < videos.length; i++) {
             if (videos[i].id === id) {
-                videos.slice(i, 1)
+                videos.splice(i, 1)
                 return true
             }
         }
