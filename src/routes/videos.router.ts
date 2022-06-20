@@ -1,24 +1,16 @@
 import {Request, Response, Router} from "express";
+import {videosRepository} from "../repositories/videos.repository";
 
-const videos = [
-    {id: 1, title: 'About JS - 01', author: 'it-incubator.eu'},
-    {id: 2, title: 'About JS - 02', author: 'it-incubator.eu'},
-    {id: 3, title: 'About JS - 03', author: 'it-incubator.eu'},
-    {id: 4, title: 'About JS - 04', author: 'it-incubator.eu'},
-    {id: 5, title: 'About JS - 05', author: 'it-incubator.eu'},
-]
+
 
 export const videosRouter = Router({})
 
 videosRouter.post(`/`, (req: Request, res: Response) => {
     if (req.body.title) {
         if (req.body.title.length < 40) {
-            const newVideo = {
-                id: +(new Date()),
-                title: req.body.title,
-                author: 'it-incubator.ru'
-            }
-            videos.push(newVideo)
+            const id = +(new Date())
+            videosRepository.createVideo(id, req.body.title, 'it-incubator.ru')
+            const newVideo = videosRepository.findVideoById(id)
             res.status(201).send(newVideo)
         } else {
             res.status(400).json({
@@ -44,14 +36,17 @@ videosRouter.post(`/`, (req: Request, res: Response) => {
 
 videosRouter.delete(`/:id`, (req: Request, res: Response) => {
     if ("id" in req.params) {
-        const id: number = Number(req.params.id)
-        const index: number = videos.findIndex(video => video.id === id)
+        const video = videosRepository.findVideoById(+req.params.id)
+        const isDeleted = videosRepository.removeVideoById(+req.params.id)
 
-        if (index === -1) {
-            res.sendStatus(404)
+        if (video) {
+            if (!isDeleted) {
+                res.sendStatus(404)
+            } else {
+                res.sendStatus(204)
+            }
         } else {
-            videos.splice(index, 1)
-            res.sendStatus(204)
+            res.sendStatus(404)
         }
     } else {
         res.sendStatus(404)
@@ -59,7 +54,10 @@ videosRouter.delete(`/:id`, (req: Request, res: Response) => {
 })
 
 videosRouter.put(`/:id`, (req: Request, res: Response) => {
-    if ("id" in req.params) {
+    const id: number = Number(req.params.id)
+    const video = videosRepository.findVideoById(id)
+
+    if (video) {
         if (typeof req.body.title !== 'string') {
             res.status(400).json({
                 "errorsMessages": [
@@ -84,14 +82,12 @@ videosRouter.put(`/:id`, (req: Request, res: Response) => {
             return
         }
 
-        const id: number = Number(req.params.id)
-        const video = videos.find(video => video.id === id)
+        const isUpdated = videosRepository.updateVideo(id, req.body.title)
 
-        if (!video) {
+        if (!isUpdated) {
             res.sendStatus(404)
         } else {
-            video.title = req.body.title
-            res.status(204).send(video)
+            res.sendStatus(204)
         }
     } else {
         res.sendStatus(404)
@@ -100,13 +96,13 @@ videosRouter.put(`/:id`, (req: Request, res: Response) => {
 })
 
 videosRouter.get(`/`, (req: Request, res: Response) => {
-    res.status(200)
-    res.send(videos)
+    const videos = videosRepository.findAllVideos()
+    res.status(200).send(videos)
 })
 
 videosRouter.get(`/:id`, (req: Request, res: Response) => {
     if ("id" in req.params) {
-        const video = videos.find(video => video.id === Number(req.params.id))
+        const video = videosRepository.findVideoById(+req.params.id)
 
         if (!video) {
             res.sendStatus(404)
