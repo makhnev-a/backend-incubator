@@ -1,6 +1,5 @@
 import {Request, Response, Router} from "express";
 import {bloggersRepository} from "../repositories/bloggers.repository";
-import {postsRepository} from "../repositories/posts.repository";
 
 export const bloggersRouter = Router({})
 
@@ -94,7 +93,7 @@ bloggersRouter.delete(`/:id`, (req: Request, res: Response) => {
 })
 
 bloggersRouter.put(`/:id`, (req: Request, res: Response) => {
-    const blogger = postsRepository.findPostById(+req.params.id)
+    const blogger = bloggersRepository.findBloggerById(+req.params.id)
     const regexpURL = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
     let errors = []
 
