@@ -76,7 +76,7 @@ bloggersRouter.post(`/`, (req: Request, res: Response) => {
                     return
                 }
 
-                const id = Math.random() * 100
+                const id = Number(new Date())
                 bloggersRepository.createBlogger(id, req.body.name, req.body.youtubeUrl)
                 const newBlogger = bloggersRepository.findBloggerById(id)
                 res.status(201).send(newBlogger)
@@ -217,7 +217,7 @@ bloggersRouter.put(`/:id`, (req: Request, res: Response) => {
                 res.sendStatus(401)
             }
         } else {
-            res.status(401)
+            res.sendStatus(401)
         }
     } else {
         res.sendStatus(401)

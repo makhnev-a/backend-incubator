@@ -139,7 +139,7 @@ postsRouter.delete(`/:id`, (req: Request, res: Response) => {
 })
 
 postsRouter.put(`/:id`, (req: Request, res: Response) => {
-    if (!req.headers) {
+    if (!req.headers.authorization) {
         res.sendStatus(401)
     } else {
         let errors = []
