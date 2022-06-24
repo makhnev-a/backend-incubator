@@ -1,10 +1,11 @@
 import {Request, Response, Router} from "express";
 import {postsRepository} from "../repositories/posts.repository";
 import {bloggersRepository} from "../repositories/bloggers.repository";
+import authMiddleware from "../middlewares/auth";
 
 export const postsRouter = Router({})
 
-postsRouter.post(`/`, (req: Request, res: Response) => {
+postsRouter.post(`/`, authMiddleware, (req: Request, res: Response) => {
     let errors: { message: string; field: string; }[] = []
 
     if ("title" in req.body) {
@@ -119,7 +120,7 @@ postsRouter.post(`/`, (req: Request, res: Response) => {
     }
 })
 
-postsRouter.delete(`/:id`, (req: Request, res: Response) => {
+postsRouter.delete(`/:id`, authMiddleware, (req: Request, res: Response) => {
     if ("id" in req.params) {
         const post = postsRepository.findPostById(+req.params.id)
         const isDeleted: boolean = postsRepository.removePostById(+req.params.id)
@@ -138,121 +139,117 @@ postsRouter.delete(`/:id`, (req: Request, res: Response) => {
     }
 })
 
-postsRouter.put(`/:id`, (req: Request, res: Response) => {
-    if (!req.headers.authorization) {
-        res.sendStatus(401)
+postsRouter.put(`/:id`, authMiddleware, (req: Request, res: Response) => {
+    let errors = []
+    const post = postsRepository.findPostById(+req.params.id)
+
+    if (!post) {
+        res.sendStatus(404)
     } else {
-        let errors = []
-        const post = postsRepository.findPostById(+req.params.id)
+        if ("title" in req.body) {
+            const newTitle = req.body.title.trim()
 
-        if (!post) {
-            res.sendStatus(404)
-        } else {
-            if ("title" in req.body) {
-                const newTitle = req.body.title.trim()
-
-                if (newTitle.length === 0) {
-                    errors.push({
-                        message: "title has been required",
-                        field: "title"
-                    })
-                } else {
-                    if (newTitle.length > 30) {
-                        errors.push({
-                            message: "title length > 30 chars",
-                            field: "title"
-                        })
-                    }
-                }
-            } else {
+            if (newTitle.length === 0) {
                 errors.push({
-                    message: "title is not defined",
+                    message: "title has been required",
                     field: "title"
                 })
-            }
-
-            if ("shortDescription" in req.body) {
-                const newShortDescription = req.body.shortDescription.trim()
-
-                if (newShortDescription.length === 0) {
-                    errors.push({
-                        message: "shortDescription has been required",
-                        field: "shortDescription"
-                    })
-                } else {
-                    if (newShortDescription.length > 100) {
-                        errors.push({
-                            message: "shortDescription length > 100 chars",
-                            field: "shortDescription"
-                        })
-                    }
-                }
             } else {
+                if (newTitle.length > 30) {
+                    errors.push({
+                        message: "title length > 30 chars",
+                        field: "title"
+                    })
+                }
+            }
+        } else {
+            errors.push({
+                message: "title is not defined",
+                field: "title"
+            })
+        }
+
+        if ("shortDescription" in req.body) {
+            const newShortDescription = req.body.shortDescription.trim()
+
+            if (newShortDescription.length === 0) {
                 errors.push({
-                    message: "shortDescription is not defined",
+                    message: "shortDescription has been required",
                     field: "shortDescription"
                 })
-            }
-
-            if ("content" in req.body) {
-                const newContent = req.body.content.trim()
-
-                if (newContent.length === 0) {
-                    errors.push({
-                        message: "content has been required",
-                        field: "content"
-                    })
-                } else {
-                    if (newContent.length > 1000) {
-                        errors.push({
-                            message: "content length > 1000 chars",
-                            field: "content"
-                        })
-                    }
-                }
             } else {
+                if (newShortDescription.length > 100) {
+                    errors.push({
+                        message: "shortDescription length > 100 chars",
+                        field: "shortDescription"
+                    })
+                }
+            }
+        } else {
+            errors.push({
+                message: "shortDescription is not defined",
+                field: "shortDescription"
+            })
+        }
+
+        if ("content" in req.body) {
+            const newContent = req.body.content.trim()
+
+            if (newContent.length === 0) {
                 errors.push({
-                    message: "content is not defined",
+                    message: "content has been required",
                     field: "content"
                 })
-            }
-
-            if ("bloggerId" in req.body) {
-                const blogger = bloggersRepository.findBloggerById(+req.body.bloggerId)
-
-                if (!blogger) {
-                    errors.push({
-                        message: "blogger not found",
-                        field: "bloggerId"
-                    })
-                } else {
-                    if (typeof req.body.bloggerId !== "number") {
-                        errors.push({
-                            message: "bloggerId is not a number",
-                            field: "bloggerId"
-                        })
-                    }
-                }
             } else {
+                if (newContent.length > 1000) {
+                    errors.push({
+                        message: "content length > 1000 chars",
+                        field: "content"
+                    })
+                }
+            }
+        } else {
+            errors.push({
+                message: "content is not defined",
+                field: "content"
+            })
+        }
+
+        if ("bloggerId" in req.body) {
+            const blogger = bloggersRepository.findBloggerById(+req.body.bloggerId)
+
+            if (!blogger) {
                 errors.push({
-                    message: "bloggerId is not defined",
+                    message: "blogger not found",
                     field: "bloggerId"
                 })
-            }
-
-            if (errors.length > 0) {
-                res.status(400).send({
-                    errorsMessages: errors
-                })
-            }
-
-            const isUpdated = postsRepository.updatePost(+req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
-
-            if (isUpdated) {
-                res.sendStatus(204)
             } else {
-                res.sendStatus(404)
+                if (typeof req.body.bloggerId !== "number") {
+                    errors.push({
+                        message: "bloggerId is not a number",
+                        field: "bloggerId"
+                    })
+                }
             }
+        } else {
+            errors.push({
+                message: "bloggerId is not defined",
+                field: "bloggerId"
+            })
+        }
+
+        if (errors.length > 0) {
+            res.status(400).send({
+                errorsMessages: errors
+            })
+        }
+
+        const isUpdated = postsRepository.updatePost(+req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
+
+        if (isUpdated) {
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(404)
         }
     }
 })
