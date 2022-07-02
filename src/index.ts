@@ -20,6 +20,11 @@ app.use('/videos', videosRouter)
 app.use('/posts', postsRouter)
 app.use('/bloggers', bloggersRouter)
 
+app.use((err: any, req: any, res: any, next: any) => {
+    console.error(err)
+    res.status(500).send('Something broke!')
+})
+
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
