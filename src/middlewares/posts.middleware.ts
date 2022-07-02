@@ -12,7 +12,7 @@ export interface CustomRequest extends Request {
     err?: IErr[] | []
 }
 
-const getErrors = (req: CustomRequest) => req.err ? req.err : []
+export const getErrors = (req: CustomRequest) => req.err ? req.err : []
 
 export const titlePostMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
     const errors = getErrors(req)

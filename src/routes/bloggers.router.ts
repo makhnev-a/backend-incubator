@@ -1,81 +1,35 @@
 import {Request, Response, Router} from "express";
 import {bloggersRepository} from "../repositories/bloggers.repository";
 import authMiddleware from "../middlewares/auth";
+import {
+    bloggerIdMiddleware,
+    nameBloggerMiddleware,
+    youtubeUrlBloggerMiddleware
+} from "../middlewares/bloggers.middleware";
+import {checkErrorsMiddleware} from "../middlewares/posts.middleware";
 
 export const bloggersRouter = Router({})
 
-bloggersRouter.post(`/`, authMiddleware, (req: Request, res: Response) => {
-    let errors = []
-    const regexpURL = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
+bloggersRouter.post(
+    `/`,
+    authMiddleware,
+    nameBloggerMiddleware,
+    youtubeUrlBloggerMiddleware,
+    checkErrorsMiddleware,
+    (req: Request, res: Response) => {
+        const bloggerId = Number(new Date())
+        bloggersRepository.createBlogger(bloggerId, req.body.name, req.body.youtubeUrl)
 
-    if ("name" in req.body) {
-        const nameTrim = req.body.name.trim()
-
-        if (nameTrim.length === 0) {
-            errors.push({
-                "message": "name not required",
-                "field": "name"
-            })
-        }
-        if (nameTrim.length > 15) {
-            errors.push({
-                "message": "name length > 15",
-                "field": "name"
-            })
-        }
-    } else {
-        errors.push({
-            "message": "field name not found",
-            "field": "name"
-        })
+        const newBlogger = bloggersRepository.findBloggerById(bloggerId)
+        res.status(201).send(newBlogger)
     }
+)
 
-
-    if ("youtubeUrl" in req.body) {
-        const urlTrim = req.body.youtubeUrl.trim()
-
-        if (urlTrim.length === 0) {
-            errors.push({
-                "message": "youtubeUrl not reqiured",
-                "field": "youtubeUrl"
-            })
-        } else {
-            if (!regexpURL.test(urlTrim)) {
-                errors.push({
-                    "message": "youtubeUrl bad url",
-                    "field": "youtubeUrl"
-                })
-            }
-            if (urlTrim.length > 100) {
-                errors.push({
-                    "message": "youtubeUrl length > 100 chars",
-                    "field": "youtubeUrl"
-                })
-            }
-        }
-    } else {
-        errors.push({
-            "message": "field youtubeUrl not found",
-            "field": "youtubeUrl"
-        })
-    }
-
-
-    if (errors.length > 0) {
-        res.status(400).send({
-            errorsMessages: errors
-        })
-        return
-    }
-
-    const id = Number(new Date())
-    bloggersRepository.createBlogger(id, req.body.name, req.body.youtubeUrl)
-    const newBlogger = bloggersRepository.findBloggerById(id)
-    res.status(201).send(newBlogger)
-})
-
-bloggersRouter.delete(`/:id`, authMiddleware, (req: Request, res: Response) => {
-    if ("id" in req.params) {
+bloggersRouter.delete(
+    `/:id`,
+    authMiddleware,
+    bloggerIdMiddleware,
+    (req: Request, res: Response) => {
         const blogger = bloggersRepository.findBloggerById(+req.params.id)
         const isDeleted = bloggersRepository.removeBloggerById(+req.params.id)
 
@@ -88,79 +42,21 @@ bloggersRouter.delete(`/:id`, authMiddleware, (req: Request, res: Response) => {
         } else {
             res.sendStatus(204)
         }
-    } else {
-        res.sendStatus(404)
     }
-})
+)
 
-bloggersRouter.put(`/:id`, authMiddleware, (req: Request, res: Response) => {
-    const blogger = bloggersRepository.findBloggerById(+req.params.id)
-    const regexpURL = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
-    let errors = []
+bloggersRouter.put(
+    `/:id`,
+    authMiddleware,
+    nameBloggerMiddleware,
+    youtubeUrlBloggerMiddleware,
+    checkErrorsMiddleware,
+    (req: Request, res: Response) => {
+        const blogger = bloggersRepository.findBloggerById(+req.params.id)
 
-    if (!blogger) {
-        res.sendStatus(404)
-    } else {
-        if ("name" in req.body) {
-            const newName = req.body.name.trim()
-            if (newName.length === 0) {
-                errors.push({
-                    message: "name has been required",
-                    field: "name"
-                })
-            } else {
-                if (newName.length > 15) {
-                    errors.push({
-                        message: "name field length > 15 chars",
-                        field: "name"
-                    })
-                }
-            }
-
-        } else {
-            errors.push({
-                message: "name field is not defined",
-                field: "name"
-            })
-        }
-
-        if ("youtubeUrl" in req.body) {
-            const newYoutubeUrl = req.body.youtubeUrl.trim()
-            if (newYoutubeUrl.lenght === 0) {
-                errors.push({
-                    message: "youtubeUrl has been required",
-                    field: "youtubeUrl"
-                })
-            } else {
-                if (regexpURL.test(newYoutubeUrl)) {
-                    if (newYoutubeUrl.length > 100) {
-                        errors.push({
-                            message: "youtubeUrl length > 100 chars",
-                            field: "youtubeUrl"
-                        })
-                    }
-                } else {
-                    errors.push({
-                        message: "youtubeUrl regex error",
-                        field: "youtubeUrl"
-                    })
-                }
-            }
-        } else {
-            res.status(400).send({
-                errorsMessages: [
-                    {
-                        message: "youtubeUrl is not defined",
-                        field: "youtubeUrl"
-                    }
-                ]
-            })
-        }
-
-        if (errors.length > 0) {
-            res.status(400).send({
-                errorsMessages: errors
-            })
+        if (!blogger) {
+            res.sendStatus(404)
+            return
         }
 
         const isUpdated = bloggersRepository.updateBlogger(+req.params.id, req.body.name, req.body.youtubeUrl)
@@ -171,20 +67,23 @@ bloggersRouter.put(`/:id`, authMiddleware, (req: Request, res: Response) => {
             res.sendStatus(404)
         }
     }
-})
+)
 
 bloggersRouter.get(`/`, (req: Request, res: Response) => {
     const bloggers = bloggersRepository.findAllBloggers()
     res.status(200).send(bloggers)
 })
 
-bloggersRouter.get(`/:id`, (req: Request, res: Response) => {
-    const blogger = bloggersRepository.findBloggerById(+req.params.id)
+bloggersRouter.get(
+    `/:id`,
+    bloggerIdMiddleware,
+    (req: Request, res: Response) => {
+        const blogger = bloggersRepository.findBloggerById(+req.params.id)
 
-    if (!blogger) {
-        res.status(404)
-        res.send("Not bound")
-    } else {
+        if (!blogger) {
+            res.sendStatus(404)
+            return
+        }
         res.send(blogger)
     }
-})
+)
