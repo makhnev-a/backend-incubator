@@ -1,11 +1,13 @@
 import {Request, Response, Router} from "express";
 import {videosRepository} from "../repositories/videos.repository";
 import {titleVidelMiddleware, videoIdMiddleware} from "../middlewares/videos.middleware";
+import authMiddleware from "../middlewares/auth";
 
 export const videosRouter = Router({})
 
 videosRouter.post(
     `/`,
+    authMiddleware,
     titleVidelMiddleware,
     (req: Request, res: Response) => {
         const videlId = +(new Date())
@@ -18,6 +20,7 @@ videosRouter.post(
 
 videosRouter.delete(
     `/:id`,
+    authMiddleware,
     videoIdMiddleware,
     (req: Request, res: Response) => {
         const video = videosRepository.findVideoById(+req.params.id)
@@ -38,6 +41,7 @@ videosRouter.delete(
 
 videosRouter.put(
     `/:id`,
+    authMiddleware,
     titleVidelMiddleware,
     (req: Request, res: Response) => {
         const videoId = +req.params.id
@@ -65,6 +69,7 @@ videosRouter.get(`/`, (req: Request, res: Response) => {
 
 videosRouter.get(
     `/:id`,
+    authMiddleware,
     videoIdMiddleware,
     (req: Request, res: Response) => {
         const video = videosRepository.findVideoById(+req.params.id)

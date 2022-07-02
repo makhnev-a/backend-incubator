@@ -3,12 +3,12 @@ import {postsRepository} from "../repositories/posts.repository";
 import authMiddleware from "../middlewares/auth";
 import {
     bloggerIdPostMiddleware,
-    checkErrorsMiddleware,
     contentPostMiddleware,
     postIdMiddleware,
     shortDescPostMiddleware,
     titlePostMiddleware
 } from "../middlewares/posts.middleware";
+import {checkErrorsMiddleware} from "../middlewares/errors.middleware";
 
 export const postsRouter = Router({})
 
@@ -73,13 +73,18 @@ postsRouter.put(
     }
 )
 
-postsRouter.get(`/`, (req: Request, res: Response) => {
-    const posts = postsRepository.findAllPosts()
-    res.status(200).send(posts)
-})
+postsRouter.get(
+    `/`,
+    authMiddleware,
+    (req: Request, res: Response) => {
+        const posts = postsRepository.findAllPosts()
+        res.status(200).send(posts)
+    }
+)
 
 postsRouter.get(
     `/:id`,
+    authMiddleware,
     postIdMiddleware,
     (req: Request, res: Response) => {
         const post = postsRepository.findPostById(+req.params.id)

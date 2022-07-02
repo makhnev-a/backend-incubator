@@ -1,7 +1,9 @@
-import {CustomRequest, getErrors} from "./posts.middleware";
-import {NextFunction, Request, Response} from "express";
 
-export const titleVidelMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
+import {NextFunction, Request, Response} from "express";
+import { getErrors } from "../helpers/getErrors";
+import { CustomRequest } from "../types/request.type";
+
+export const titleVidelMiddleware = (req: CustomRequest, res: Response, next: NextFunction): void => {
     const errors = getErrors(req)
 
     if ("title" in req.body) {
@@ -48,7 +50,7 @@ export const titleVidelMiddleware = (req: CustomRequest, res: Response, next: Ne
     next()
 }
 
-export const videoIdMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const videoIdMiddleware = (req: Request, res: Response, next: NextFunction): void => {
     if ("id" in req.params) {
         next()
         return

@@ -1,5 +1,7 @@
-import {CustomRequest, getErrors} from "./posts.middleware";
+
 import {NextFunction, Request, Response} from "express";
+import { getErrors } from "../helpers/getErrors";
+import { CustomRequest } from "../types/request.type";
 
 export const nameBloggerMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
     const errors = getErrors(req)

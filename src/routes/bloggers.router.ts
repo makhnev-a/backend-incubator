@@ -6,7 +6,7 @@ import {
     nameBloggerMiddleware,
     youtubeUrlBloggerMiddleware
 } from "../middlewares/bloggers.middleware";
-import {checkErrorsMiddleware} from "../middlewares/posts.middleware";
+import {checkErrorsMiddleware} from "../middlewares/errors.middleware";
 
 export const bloggersRouter = Router({})
 
@@ -69,13 +69,18 @@ bloggersRouter.put(
     }
 )
 
-bloggersRouter.get(`/`, (req: Request, res: Response) => {
-    const bloggers = bloggersRepository.findAllBloggers()
-    res.status(200).send(bloggers)
-})
+bloggersRouter.get(
+    `/`,
+    authMiddleware,
+    (req: Request, res: Response) => {
+        const bloggers = bloggersRepository.findAllBloggers()
+        res.status(200).send(bloggers)
+    }
+)
 
 bloggersRouter.get(
     `/:id`,
+    authMiddleware,
     bloggerIdMiddleware,
     (req: Request, res: Response) => {
         const blogger = bloggersRepository.findBloggerById(+req.params.id)

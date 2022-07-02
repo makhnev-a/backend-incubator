@@ -1,20 +1,9 @@
-import {NextFunction, Request, Response} from "express";
+import {NextFunction, Response} from "express";
+import { getErrors } from "../helpers/getErrors";
 import {bloggersRepository} from "../repositories/bloggers.repository";
+import { CustomRequest } from "../types/request.type";
 
-interface IErr {
-    message: string
-    field: string
-}
-
-export interface CustomRequest extends Request {
-    foo?: string,
-    bar?: number
-    err?: IErr[] | []
-}
-
-export const getErrors = (req: CustomRequest) => req.err ? req.err : []
-
-export const titlePostMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
+export const titlePostMiddleware = (req: CustomRequest, res: Response, next: NextFunction): void => {
     const errors = getErrors(req)
 
     if ("title" in req.body) {
@@ -45,7 +34,7 @@ export const titlePostMiddleware = (req: CustomRequest, res: Response, next: Nex
     next()
 }
 
-export const contentPostMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
+export const contentPostMiddleware = (req: CustomRequest, res: Response, next: NextFunction): void => {
     const errors = getErrors(req)
 
     if ("content" in req.body) {
@@ -75,7 +64,7 @@ export const contentPostMiddleware = (req: CustomRequest, res: Response, next: N
     next()
 }
 
-export const postIdMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
+export const postIdMiddleware = (req: CustomRequest, res: Response, next: NextFunction): void => {
     if ('id' in req.params) {
         next()
         return
@@ -84,7 +73,7 @@ export const postIdMiddleware = (req: CustomRequest, res: Response, next: NextFu
     res.sendStatus(404)
 }
 
-export const bloggerIdPostMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
+export const bloggerIdPostMiddleware = (req: CustomRequest, res: Response, next: NextFunction): void => {
     const errors = getErrors(req)
 
     if ("bloggerId" in req.body) {
@@ -114,7 +103,7 @@ export const bloggerIdPostMiddleware = (req: CustomRequest, res: Response, next:
     next()
 }
 
-export const shortDescPostMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
+export const shortDescPostMiddleware = (req: CustomRequest, res: Response, next: NextFunction): void => {
     const errors = getErrors(req)
 
     if ("shortDescription" in req.body) {
@@ -142,17 +131,4 @@ export const shortDescPostMiddleware = (req: CustomRequest, res: Response, next:
 
     req.err = errors
     next()
-}
-
-export const checkErrorsMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
-    const errors = getErrors(req)
-
-    if (errors.length > 0) {
-        res.status(400).send({
-            errorsMessages: errors
-        })
-        return
-    }
-    next()
-
 }
