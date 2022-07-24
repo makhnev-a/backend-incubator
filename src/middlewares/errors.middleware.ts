@@ -1,15 +1,19 @@
-import {CustomRequest} from "../types/request.type";
-import {NextFunction, Response} from "express";
-import { getErrors } from "../helpers/getErrors";
+import {CustomRequest} from "../types/request.type"
+import {NextFunction, Response} from "express"
+import {validationResult} from "express-validator"
 
-export const checkErrorsMiddleware = (req: CustomRequest, res: Response, next: NextFunction): void => {
-    const errors = getErrors(req)
+export const checkErrorsMiddleware = (req: CustomRequest, res: Response, next: NextFunction): Response | void => {
+    const myValidationResult = validationResult.withDefaults({
+        formatter: error => {
+            return error.msg
+        }
+    })
+    const errorsResult = myValidationResult(req)
 
-    if (errors.length > 0) {
-        res.status(400).send({
-            errorsMessages: errors
+    if (!errorsResult.isEmpty()) {
+        return res.status(400).send({
+            errorsMessages: Object.values(errorsResult.mapped())
         })
-        return
     }
     next()
 }

@@ -1,25 +1,14 @@
 import {Request, Response, Router} from "express";
 import {postsRepository} from "../repositories/posts.repository";
 import authMiddleware from "../middlewares/auth";
-import {
-    bloggerIdPostMiddleware,
-    contentPostMiddleware,
-    postIdMiddleware,
-    shortDescPostMiddleware,
-    titlePostMiddleware
-} from "../middlewares/posts.middleware";
-import {checkErrorsMiddleware} from "../middlewares/errors.middleware";
+import postsValidator from "../validators/posts.validator"
 
 export const postsRouter = Router({})
 
 postsRouter.post(
     `/`,
     authMiddleware,
-    titlePostMiddleware,
-    shortDescPostMiddleware,
-    contentPostMiddleware,
-    bloggerIdPostMiddleware,
-    checkErrorsMiddleware,
+    [...postsValidator],
     (req: Request, res: Response) => {
         const postId = Number(new Date())
         postsRepository.createPost(req.body.title, req.body.shortDescription, req.body.content, +req.body.bloggerId, "Andrey Makhnev", postId)
@@ -31,14 +20,14 @@ postsRouter.post(
 postsRouter.delete(
     `/:id`,
     authMiddleware,
-    postIdMiddleware,
     (req: Request, res: Response) => {
         const post = postsRepository.findPostById(+req.params.id)
-        const isDeleted: boolean = postsRepository.removePostById(+req.params.id)
 
         if (!post) {
             res.sendStatus(404)
         }
+
+        const isDeleted: boolean = postsRepository.removePostById(+req.params.id)
 
         if (!isDeleted) {
             res.sendStatus(404)
@@ -51,11 +40,7 @@ postsRouter.delete(
 postsRouter.put(
     `/:id`,
     authMiddleware,
-    titlePostMiddleware,
-    shortDescPostMiddleware,
-    contentPostMiddleware,
-    bloggerIdPostMiddleware,
-    checkErrorsMiddleware,
+    [...postsValidator],
     (req: Request, res: Response) => {
         const post = postsRepository.findPostById(+req.params.id)
 
@@ -85,7 +70,6 @@ postsRouter.get(
 postsRouter.get(
     `/:id`,
     authMiddleware,
-    postIdMiddleware,
     (req: Request, res: Response) => {
         const post = postsRepository.findPostById(+req.params.id)
 

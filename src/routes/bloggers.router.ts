@@ -1,21 +1,14 @@
 import {Request, Response, Router} from "express";
 import {bloggersRepository} from "../repositories/bloggers.repository";
 import authMiddleware from "../middlewares/auth";
-import {
-    bloggerIdMiddleware,
-    nameBloggerMiddleware,
-    youtubeUrlBloggerMiddleware
-} from "../middlewares/bloggers.middleware";
-import {checkErrorsMiddleware} from "../middlewares/errors.middleware";
+import bloggersValidator from "../validators/bloggers.validator"
 
 export const bloggersRouter = Router({})
 
 bloggersRouter.post(
     `/`,
     authMiddleware,
-    nameBloggerMiddleware,
-    youtubeUrlBloggerMiddleware,
-    checkErrorsMiddleware,
+    [...bloggersValidator],
     (req: Request, res: Response) => {
         const bloggerId = Number(new Date())
         bloggersRepository.createBlogger(bloggerId, req.body.name, req.body.youtubeUrl)
@@ -28,7 +21,6 @@ bloggersRouter.post(
 bloggersRouter.delete(
     `/:id`,
     authMiddleware,
-    bloggerIdMiddleware,
     (req: Request, res: Response) => {
         const blogger = bloggersRepository.findBloggerById(+req.params.id)
         const isDeleted = bloggersRepository.removeBloggerById(+req.params.id)
@@ -48,15 +40,12 @@ bloggersRouter.delete(
 bloggersRouter.put(
     `/:id`,
     authMiddleware,
-    nameBloggerMiddleware,
-    youtubeUrlBloggerMiddleware,
-    checkErrorsMiddleware,
+    [...bloggersValidator],
     (req: Request, res: Response) => {
         const blogger = bloggersRepository.findBloggerById(+req.params.id)
 
         if (!blogger) {
-            res.sendStatus(404)
-            return
+            return res.sendStatus(404)
         }
 
         const isUpdated = bloggersRepository.updateBlogger(+req.params.id, req.body.name, req.body.youtubeUrl)
@@ -81,13 +70,11 @@ bloggersRouter.get(
 bloggersRouter.get(
     `/:id`,
     authMiddleware,
-    bloggerIdMiddleware,
     (req: Request, res: Response) => {
         const blogger = bloggersRepository.findBloggerById(+req.params.id)
 
         if (!blogger) {
-            res.sendStatus(404)
-            return
+            return res.sendStatus(404)
         }
         res.send(blogger)
     }
