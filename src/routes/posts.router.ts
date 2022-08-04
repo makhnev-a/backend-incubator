@@ -61,7 +61,6 @@ postsRouter.put(
 
 postsRouter.get(
     `/`,
-    authMiddleware,
     async (req: Request, res: Response) => {
         const posts: PostType[] = await postsService.findAllPosts()
         res.status(200).send(posts)
@@ -70,7 +69,6 @@ postsRouter.get(
 
 postsRouter.get(
     `/:id`,
-    authMiddleware,
     async (req: Request, res: Response) => {
         const post: PostType | null = await postsService.findPostById(+req.params.id)
 

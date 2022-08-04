@@ -3,6 +3,7 @@ import authMiddleware from "../middlewares/auth"
 import bloggersValidator from "../validators/bloggers.validator"
 import {BloggerType} from "../repositories/local/bloggers.repository"
 import {bloggersService} from "../domain/bloggers.service"
+import {BloggersResponseType} from "../repositories/mongo/bloggers.repository";
 
 export const bloggersRouter = Router({})
 
@@ -62,16 +63,18 @@ bloggersRouter.put(
 
 bloggersRouter.get(
     `/`,
-    authMiddleware,
     async (req: Request, res: Response) => {
-        const bloggers: BloggerType[] = await bloggersService.findAllBloggers()
-        res.status(200).send(bloggers)
+        const {PageNumber, PageSize} = req.query
+        const page = PageNumber ? PageNumber : 1
+        const pageSize = PageSize ? PageSize : 10
+        const result: BloggersResponseType = await bloggersService.findAllBloggers(+page, +pageSize)
+
+        res.status(200).send(result)
     }
 )
 
 bloggersRouter.get(
     `/:id`,
-    authMiddleware,
     async (req: Request, res: Response) => {
         const blogger: BloggerType | null = await bloggersService.findBloggerById(+req.params.id)
 
