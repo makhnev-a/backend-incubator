@@ -1,8 +1,9 @@
-import {Request, Response, Router} from "express";
-import {postsRepository} from "../repositories/mongo/posts.repository";
-import authMiddleware from "../middlewares/auth";
+import {Request, Response, Router} from "express"
+import {postsRepository} from "../repositories/mongo/posts.repository"
+import authMiddleware from "../middlewares/auth"
 import postsValidator from "../validators/posts.validator"
-import {PostType} from "../repositories/local/posts.repository";
+import {PostType} from "../repositories/local/posts.repository"
+import {postsService} from "../domain/posts.service"
 
 export const postsRouter = Router({})
 
@@ -12,9 +13,9 @@ postsRouter.post(
     [...postsValidator],
     async (req: Request, res: Response) => {
         const postId = Number(new Date())
-        await postsRepository.createPost(req.body.title, req.body.shortDescription, req.body.content, +req.body.bloggerId, "Andrey Makhnev", postId)
+        await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, +req.body.bloggerId, "Andrey Makhnev", postId)
 
-        const post: PostType | null = await postsRepository.findPostById(postId)
+        const post: PostType | null = await postsService.findPostById(postId)
         res.status(201).send(post)
     })
 
@@ -22,13 +23,13 @@ postsRouter.delete(
     `/:id`,
     authMiddleware,
     async (req: Request, res: Response) => {
-        const post: PostType | null = await postsRepository.findPostById(+req.params.id)
+        const post: PostType | null = await postsService.findPostById(+req.params.id)
 
         if (!post) {
             return res.sendStatus(404)
         }
 
-        const isDeleted: boolean = await postsRepository.removePostById(+req.params.id)
+        const isDeleted: boolean = await postsService.removePostById(+req.params.id)
 
         if (!isDeleted) {
             res.sendStatus(404)
@@ -43,12 +44,12 @@ postsRouter.put(
     authMiddleware,
     [...postsValidator],
     async (req: Request, res: Response) => {
-        const post: PostType | null = await postsRepository.findPostById(+req.params.id)
+        const post: PostType | null = await postsService.findPostById(+req.params.id)
 
         if (!post) {
             return res.sendStatus(404)
         } else {
-            const isUpdated: boolean = await postsRepository.updatePost(+req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
+            const isUpdated: boolean = await postsService.updatePost(+req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
 
             if (isUpdated) {
                 res.sendStatus(204)
@@ -63,7 +64,7 @@ postsRouter.get(
     `/`,
     authMiddleware,
     async (req: Request, res: Response) => {
-        const posts: PostType[] = await postsRepository.findAllPosts()
+        const posts: PostType[] = await postsService.findAllPosts()
         res.status(200).send(posts)
     }
 )
@@ -72,7 +73,7 @@ postsRouter.get(
     `/:id`,
     authMiddleware,
     async (req: Request, res: Response) => {
-        const post: PostType | null = await postsRepository.findPostById(+req.params.id)
+        const post: PostType | null = await postsService.findPostById(+req.params.id)
 
         if (!post) {
             return res.sendStatus(404)

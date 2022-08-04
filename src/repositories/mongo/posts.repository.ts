@@ -15,16 +15,7 @@ export const postsRepository = {
 
         return result.deletedCount === 1
     },
-    async createPost(title: string, shortDescription: string, content: string, bloggerId: number, bloggerName: string, id: number): Promise<void> {
-        const newPost = {
-            id,
-            title,
-            shortDescription,
-            content,
-            bloggerId,
-            bloggerName,
-        }
-
+    async createPost(newPost: PostType): Promise<void> {
         await postsCollection.insertOne(newPost)
     },
     async updatePost(id: number, title: string, shortDescription: string, content: string, bloggerId: number): Promise<boolean> {
