@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import {videosRouter} from "./routes/videos.router";
 import {postsRouter} from "./routes/posts.router";
 import {bloggersRouter} from "./routes/bloggers.router";
+import {runDB} from "./repositories/db";
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -20,11 +21,16 @@ app.use('/videos', videosRouter)
 app.use('/posts', postsRouter)
 app.use('/bloggers', bloggersRouter)
 
-app.use((err: any, req: any, res: any, next: any) => {
-    console.error(err)
-    res.status(500).send('Something broke!')
-})
+// app.use((err: any, req: any, res: any, next: any) => {
+//     console.error(err)
+//     res.status(500).send('Something broke!')
+// })
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-})
+const startApp = async () => {
+    await runDB()
+    app.listen(port, () => {
+        console.log(`Example app listening on port ${port}`)
+    })
+}
+
+startApp()

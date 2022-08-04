@@ -1,4 +1,10 @@
-export const bloggers = [
+export type BloggerType = {
+    id: number
+    name: string
+    youtubeUrl: string
+}
+
+export const bloggers: BloggerType[] = [
     {
         id: 1,
         name: "Petr",
@@ -17,13 +23,13 @@ export const bloggers = [
 ]
 
 export const bloggersRepository = {
-    findBloggerById(id: number) {
+    async findBloggerById(id: number): Promise<BloggerType | undefined> {
         return bloggers.find(blogger => blogger.id === id)
     },
-    findAllBloggers() {
+    async findAllBloggers(): Promise<BloggerType[]> {
         return bloggers
     },
-    removeBloggerById(id: number) {
+    async removeBloggerById(id: number): Promise<boolean> {
         for (let i: number = 0; i < bloggers.length; i++) {
             if (bloggers[i].id === id) {
                 bloggers.splice(i, 1)
@@ -32,7 +38,7 @@ export const bloggersRepository = {
         }
         return false
     },
-    createBlogger(id: number, name: string, youtubeUrl: string) {
+    async createBlogger(id: number, name: string, youtubeUrl: string): Promise<void> {
         const newBlogger = {
             id,
             name,
@@ -40,8 +46,8 @@ export const bloggersRepository = {
         }
         bloggers.push(newBlogger)
     },
-    updateBlogger(id: number, name: string, youtubeUrl: string) {
-        const blogger = bloggersRepository.findBloggerById(id)
+    async updateBlogger(id: number, name: string, youtubeUrl: string): Promise<boolean> {
+        const blogger: BloggerType | undefined = await bloggersRepository.findBloggerById(id)
 
         if (blogger) {
             blogger.name = name

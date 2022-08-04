@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {bloggersRepository} from "../repositories/bloggers.repository";
+import {bloggersRepository, BloggerType} from "../repositories/local/bloggers.repository";
 import authMiddleware from "../middlewares/auth";
 import bloggersValidator from "../validators/bloggers.validator"
 
@@ -9,11 +9,11 @@ bloggersRouter.post(
     `/`,
     authMiddleware,
     [...bloggersValidator],
-    (req: Request, res: Response) => {
+    async (req: Request, res: Response) => {
         const bloggerId = Number(new Date())
-        bloggersRepository.createBlogger(bloggerId, req.body.name, req.body.youtubeUrl)
+        await bloggersRepository.createBlogger(bloggerId, req.body.name, req.body.youtubeUrl)
 
-        const newBlogger = bloggersRepository.findBloggerById(bloggerId)
+        const newBlogger: BloggerType | undefined = await bloggersRepository.findBloggerById(bloggerId)
         res.status(201).send(newBlogger)
     }
 )
@@ -21,13 +21,14 @@ bloggersRouter.post(
 bloggersRouter.delete(
     `/:id`,
     authMiddleware,
-    (req: Request, res: Response) => {
-        const blogger = bloggersRepository.findBloggerById(+req.params.id)
-        const isDeleted = bloggersRepository.removeBloggerById(+req.params.id)
+    async (req: Request, res: Response) => {
+        const blogger: BloggerType | undefined = await bloggersRepository.findBloggerById(+req.params.id)
 
         if (!blogger) {
             res.sendStatus(404)
         }
+
+        const isDeleted: boolean = await bloggersRepository.removeBloggerById(+req.params.id)
 
         if (!isDeleted) {
             res.sendStatus(404)
@@ -41,14 +42,14 @@ bloggersRouter.put(
     `/:id`,
     authMiddleware,
     [...bloggersValidator],
-    (req: Request, res: Response) => {
-        const blogger = bloggersRepository.findBloggerById(+req.params.id)
+    async (req: Request, res: Response) => {
+        const blogger: BloggerType | undefined = await bloggersRepository.findBloggerById(+req.params.id)
 
         if (!blogger) {
             return res.sendStatus(404)
         }
 
-        const isUpdated = bloggersRepository.updateBlogger(+req.params.id, req.body.name, req.body.youtubeUrl)
+        const isUpdated: boolean = await bloggersRepository.updateBlogger(+req.params.id, req.body.name, req.body.youtubeUrl)
 
         if (isUpdated) {
             res.sendStatus(204)
@@ -61,8 +62,8 @@ bloggersRouter.put(
 bloggersRouter.get(
     `/`,
     authMiddleware,
-    (req: Request, res: Response) => {
-        const bloggers = bloggersRepository.findAllBloggers()
+    async (req: Request, res: Response) => {
+        const bloggers: BloggerType[] = await bloggersRepository.findAllBloggers()
         res.status(200).send(bloggers)
     }
 )
@@ -70,8 +71,8 @@ bloggersRouter.get(
 bloggersRouter.get(
     `/:id`,
     authMiddleware,
-    (req: Request, res: Response) => {
-        const blogger = bloggersRepository.findBloggerById(+req.params.id)
+    async (req: Request, res: Response) => {
+        const blogger: BloggerType | undefined = await bloggersRepository.findBloggerById(+req.params.id)
 
         if (!blogger) {
             return res.sendStatus(404)

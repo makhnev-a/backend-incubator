@@ -1,4 +1,13 @@
-export const posts = [
+export type PostType = {
+    id: number
+    title: string
+    shortDescription: string
+    content: string
+    bloggerId: number
+    bloggerName: string
+}
+
+export const posts: PostType[] = [
     {
         id: 1,
         title: "Hello world!",
@@ -26,13 +35,13 @@ export const posts = [
 ]
 
 export const postsRepository = {
-    findAllPosts() {
+    async findAllPosts(): Promise<PostType[]> {
         return posts
     },
-    findPostById(id: number) {
+    async findPostById(id: number): Promise<PostType | undefined> {
         return posts.find(post => post.id === id)
     },
-    removePostById(id: number) {
+    async removePostById(id: number): Promise<boolean> {
         for (let i: number = 0; i < posts.length; i++) {
             if (posts[i].id === id) {
                 posts.splice(i, 1)
@@ -41,7 +50,7 @@ export const postsRepository = {
         }
         return false
     },
-    createPost(title: string, shortDescription: string, content: string, bloggerId: number, bloggerName: string, id: number) {
+    async createPost(title: string, shortDescription: string, content: string, bloggerId: number, bloggerName: string, id: number): Promise<void> {
         const newPost = {
             id,
             title,
@@ -52,8 +61,8 @@ export const postsRepository = {
         }
         posts.push(newPost)
     },
-    updatePost(id: number, title: string, shortDescription: string, content: string, bloggerId: number) {
-        const post = postsRepository.findPostById(id)
+    async updatePost(id: number, title: string, shortDescription: string, content: string, bloggerId: number): Promise<boolean> {
+        const post: PostType | undefined = await postsRepository.findPostById(id)
 
         if (post) {
             post.title = title

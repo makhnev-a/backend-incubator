@@ -1,6 +1,6 @@
 import {checkErrorsMiddleware} from "../middlewares/errors.middleware";
 import {body} from "express-validator";
-import {bloggersRepository} from "../repositories/bloggers.repository";
+import {bloggersRepository} from "../repositories/local/bloggers.repository";
 
 const titleValidate = [
     body("title")

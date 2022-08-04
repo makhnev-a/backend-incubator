@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {videosRepository} from "../repositories/videos.repository";
+import {videosRepository} from "../repositories/local/videos.repository";
 import {titleVidelMiddleware, videoIdMiddleware} from "../middlewares/videos.middleware";
 import authMiddleware from "../middlewares/auth";
 
