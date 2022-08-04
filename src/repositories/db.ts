@@ -1,7 +1,6 @@
 import {MongoClient} from "mongodb"
 import {config} from "../config";
-import {PostType} from "./local/posts.repository";
-import {BloggerType} from "./local/bloggers.repository";
+import {BloggerType, PostType } from "./types";
 
 const mongoURL = config.dbURL
 

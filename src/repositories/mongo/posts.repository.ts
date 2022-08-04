@@ -1,9 +1,24 @@
-import {PostType} from "../local/posts.repository"
 import {postsCollection} from "../db"
+import { PostType } from "../types";
+import {PaginationResultType} from "./types";
 
 export const postsRepository = {
-    async findAllPosts(): Promise<PostType[]> {
-        return await postsCollection.find({}).toArray()
+    async findAllPosts(page: number, pageSize: number): Promise<PaginationResultType<PostType[]>> {
+        const totalCount: number = await postsCollection.count({})
+        const pagesCount: number = Math.ceil(totalCount / pageSize)
+        const realPage: number = (page - 1) * pageSize
+        const posts = await postsCollection.find({})
+            .skip(realPage)
+            .limit(pageSize)
+            .toArray()
+
+        return {
+            pagesCount,
+            page,
+            pageSize,
+            totalCount,
+            items: posts,
+        }
     },
     async findPostById(id: number): Promise<PostType | null> {
         const post: PostType | null = await postsCollection.findOne({id})

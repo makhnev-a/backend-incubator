@@ -1,11 +1,4 @@
-export type PostType = {
-    id: number
-    title: string
-    shortDescription: string
-    content: string
-    bloggerId: number
-    bloggerName: string
-}
+import { PostType } from "../types"
 
 export const posts: PostType[] = [
     {

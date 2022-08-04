@@ -1,8 +1,4 @@
-export type BloggerType = {
-    id: number
-    name: string
-    youtubeUrl: string
-}
+import { BloggerType } from "../types"
 
 export const bloggers: BloggerType[] = [
     {

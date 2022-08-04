@@ -1,9 +1,10 @@
-import { PostType } from "../repositories/local/posts.repository";
 import {postsRepository} from "../repositories/mongo/posts.repository";
+import {PaginationResultType} from "../repositories/mongo/types";
+import {PostType} from "../repositories/types";
 
 export const postsService = {
-    async findAllPosts(): Promise<PostType[]> {
-        return await postsRepository.findAllPosts()
+    async findAllPosts(page: number, pageSize: number): Promise<PaginationResultType<PostType[]>> {
+        return await postsRepository.findAllPosts(page, pageSize)
     },
     async findPostById(id: number): Promise<PostType | null> {
         return await postsRepository.findPostById(id)

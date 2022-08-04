@@ -1,19 +1,12 @@
-import {BloggerType} from "../local/bloggers.repository"
 import {bloggersCollection} from "../db"
-
-export type BloggersResponseType = {
-    pagesCount: number
-    page: number
-    pageSize: number
-    totalCount: number
-    items: BloggerType[]
-}
+import { BloggerType } from "../types";
+import {PaginationResultType} from "./types";
 
 export const bloggersRepository = {
     async findBloggerById(id: number): Promise<BloggerType | null> {
         return await bloggersCollection.findOne({id})
     },
-    async findAllBloggers(page: number = 1, pageSize: number = 10): Promise<BloggersResponseType> {
+    async findAllBloggers(page: number = 1, pageSize: number = 10): Promise<PaginationResultType<BloggerType[]>> {
         const totalCount: number = await bloggersCollection.count({})
         const pagesCount: number = Math.ceil(totalCount / pageSize)
         const realPage = (page - 1) * pageSize

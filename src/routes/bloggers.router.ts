@@ -1,9 +1,9 @@
 import {Request, Response, Router} from "express"
 import authMiddleware from "../middlewares/auth"
 import bloggersValidator from "../validators/bloggers.validator"
-import {BloggerType} from "../repositories/local/bloggers.repository"
 import {bloggersService} from "../domain/bloggers.service"
-import {BloggersResponseType} from "../repositories/mongo/bloggers.repository";
+import {PaginationResultType} from "../repositories/mongo/types";
+import {BloggerType} from "../repositories/types";
 
 export const bloggersRouter = Router({})
 
@@ -67,7 +67,7 @@ bloggersRouter.get(
         const {PageNumber, PageSize} = req.query
         const page = PageNumber ? PageNumber : 1
         const pageSize = PageSize ? PageSize : 10
-        const result: BloggersResponseType = await bloggersService.findAllBloggers(+page, +pageSize)
+        const result: PaginationResultType<BloggerType[]> = await bloggersService.findAllBloggers(+page, +pageSize)
 
         res.status(200).send(result)
     }

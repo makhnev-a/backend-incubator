@@ -1,8 +1,9 @@
 import {Request, Response, Router} from "express"
 import authMiddleware from "../middlewares/auth"
 import postsValidator from "../validators/posts.validator"
-import {PostType} from "../repositories/local/posts.repository"
 import {postsService} from "../domain/posts.service"
+import {PaginationResultType} from "../repositories/mongo/types";
+import { PostType } from "../repositories/types";
 
 export const postsRouter = Router({})
 
@@ -62,7 +63,11 @@ postsRouter.put(
 postsRouter.get(
     `/`,
     async (req: Request, res: Response) => {
-        const posts: PostType[] = await postsService.findAllPosts()
+        const {PageNumber, PageSize} = req.query
+        const page = PageNumber ? PageNumber : 1
+        const pageSize = PageSize ? PageSize : 10
+        const posts: PaginationResultType<PostType[]> = await postsService.findAllPosts(+page, +pageSize)
+
         res.status(200).send(posts)
     }
 )

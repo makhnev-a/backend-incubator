@@ -1,11 +1,12 @@
-import {BloggerType} from "../repositories/local/bloggers.repository"
-import {bloggersRepository, BloggersResponseType} from "../repositories/mongo/bloggers.repository";
+import {bloggersRepository} from "../repositories/mongo/bloggers.repository";
+import {PaginationResultType} from "../repositories/mongo/types";
+import { BloggerType } from "../repositories/types";
 
 export const bloggersService = {
     async findBloggerById(id: number): Promise<BloggerType | null> {
         return await bloggersRepository.findBloggerById(id)
     },
-    async findAllBloggers(page: number, pageSize: number): Promise<BloggersResponseType> {
+    async findAllBloggers(page: number, pageSize: number): Promise<PaginationResultType<BloggerType[]>> {
         return await bloggersRepository.findAllBloggers(page, pageSize)
     },
     async removeBloggerById(id: number): Promise<boolean> {
