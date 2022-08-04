@@ -1,5 +1,4 @@
 import {Request, Response, Router} from "express"
-import {postsRepository} from "../repositories/mongo/posts.repository"
 import authMiddleware from "../middlewares/auth"
 import postsValidator from "../validators/posts.validator"
 import {PostType} from "../repositories/local/posts.repository"

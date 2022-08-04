@@ -13,13 +13,7 @@ export const bloggersRepository = {
 
         return result.deletedCount === 1
     },
-    async createBlogger(id: number, name: string, youtubeUrl: string): Promise<void> {
-        const newBlogger = {
-            id,
-            name,
-            youtubeUrl
-        }
-
+    async createBlogger(newBlogger: BloggerType): Promise<void> {
         await bloggersCollection.insertOne(newBlogger)
     },
     async updateBlogger(id: number, name: string, youtubeUrl: string): Promise<boolean> {
