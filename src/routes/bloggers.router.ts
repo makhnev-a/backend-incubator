@@ -1,7 +1,8 @@
 import {Request, Response, Router} from "express";
-import {bloggersRepository, BloggerType} from "../repositories/local/bloggers.repository";
+import {bloggersRepository} from "../repositories/mongo/bloggers.repository";
 import authMiddleware from "../middlewares/auth";
 import bloggersValidator from "../validators/bloggers.validator"
+import { BloggerType } from "../repositories/local/bloggers.repository";
 
 export const bloggersRouter = Router({})
 
@@ -13,7 +14,7 @@ bloggersRouter.post(
         const bloggerId = Number(new Date())
         await bloggersRepository.createBlogger(bloggerId, req.body.name, req.body.youtubeUrl)
 
-        const newBlogger: BloggerType | undefined = await bloggersRepository.findBloggerById(bloggerId)
+        const newBlogger: BloggerType | null = await bloggersRepository.findBloggerById(bloggerId)
         res.status(201).send(newBlogger)
     }
 )
@@ -22,7 +23,7 @@ bloggersRouter.delete(
     `/:id`,
     authMiddleware,
     async (req: Request, res: Response) => {
-        const blogger: BloggerType | undefined = await bloggersRepository.findBloggerById(+req.params.id)
+        const blogger: BloggerType | null = await bloggersRepository.findBloggerById(+req.params.id)
 
         if (!blogger) {
             res.sendStatus(404)
@@ -43,7 +44,7 @@ bloggersRouter.put(
     authMiddleware,
     [...bloggersValidator],
     async (req: Request, res: Response) => {
-        const blogger: BloggerType | undefined = await bloggersRepository.findBloggerById(+req.params.id)
+        const blogger: BloggerType | null = await bloggersRepository.findBloggerById(+req.params.id)
 
         if (!blogger) {
             return res.sendStatus(404)
@@ -72,7 +73,7 @@ bloggersRouter.get(
     `/:id`,
     authMiddleware,
     async (req: Request, res: Response) => {
-        const blogger: BloggerType | undefined = await bloggersRepository.findBloggerById(+req.params.id)
+        const blogger: BloggerType | null = await bloggersRepository.findBloggerById(+req.params.id)
 
         if (!blogger) {
             return res.sendStatus(404)

@@ -1,9 +1,15 @@
 import {MongoClient} from "mongodb"
 import {config} from "../config";
+import {PostType} from "./local/posts.repository";
+import {BloggerType} from "./local/bloggers.repository";
 
 const mongoURL = config.dbURL
 
-export const client = new MongoClient(mongoURL)
+const client = new MongoClient(mongoURL)
+const db = client.db("samuraiback")
+
+export const postsCollection = db.collection<PostType>("posts")
+export const bloggersCollection = db.collection<BloggerType>("bloggers")
 
 export async function runDB() {
     try {
