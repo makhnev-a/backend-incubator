@@ -73,7 +73,6 @@ bloggersRouter.put(
     authMiddleware,
     [...bloggersValidator],
     async (req: Request, res: Response) => {
-        debugger
         const blogger: BloggerType | null = await bloggersService.findBloggerById(+req.params.id)
 
         if (!blogger) {

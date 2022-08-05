@@ -3,7 +3,8 @@ import authMiddleware from "../middlewares/auth"
 import postsValidator from "../validators/posts.validator"
 import {postsService} from "../domain/posts.service"
 import {PaginationResultType} from "../repositories/mongo/types";
-import { PostType } from "../repositories/types";
+import {BloggerType, PostType} from "../repositories/types";
+import {bloggersService} from "../domain/bloggers.service";
 
 export const postsRouter = Router({})
 
@@ -13,6 +14,12 @@ postsRouter.post(
     [...postsValidator],
     async (req: Request, res: Response) => {
         const postId = Number(new Date())
+        const blogger: BloggerType | null = await bloggersService.findBloggerById(+req.body.bloggerId)
+
+        if (!blogger) {
+            return res.sendStatus(404)
+        }
+
         await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, +req.body.bloggerId, "Andrey Makhnev", postId)
 
         const post: PostType | null = await postsService.findPostById(postId)
@@ -49,6 +56,12 @@ postsRouter.put(
         if (!post) {
             return res.sendStatus(404)
         } else {
+            const blogger: BloggerType | null = await bloggersService.findBloggerById(+req.body.bloggerId)
+
+            if (!blogger) {
+                return res.sendStatus(404)
+            }
+
             const isUpdated: boolean = await postsService.updatePost(+req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
 
             if (isUpdated) {
