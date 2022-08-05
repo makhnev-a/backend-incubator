@@ -1,7 +1,7 @@
 import {body} from "express-validator";
 import {checkErrorsMiddleware} from "../middlewares/errors.middleware";
 
-const nameValidate = [
+export const nameValidate = [
     body("name")
         .exists()
         .withMessage({
@@ -17,7 +17,7 @@ const nameValidate = [
         })
 ]
 
-const youtubeUrlValidate = [
+export const youtubeUrlValidate = [
     body("youtubeUrl")
         .exists()
         .withMessage({

@@ -1,6 +1,7 @@
-import {checkErrorsMiddleware} from "../middlewares/errors.middleware";
-import {body} from "express-validator";
-import {bloggersRepository} from "../repositories/local/bloggers.repository";
+import {body} from "express-validator"
+import {bloggersService} from "../domain/bloggers.service"
+import {checkErrorsMiddleware} from "../middlewares/errors.middleware"
+import {BloggerType} from "../repositories/types";
 
 export const titleValidate = [
     body("title")
@@ -64,8 +65,8 @@ export const bloggerIdValidate = [
             field: "bloggerId"
         }),
     body("bloggerId")
-        .custom(value => {
-            const blogger = bloggersRepository.findBloggerById(value)
+        .custom(async (value) => {
+            const blogger: BloggerType | null = await bloggersService.findBloggerById(value)
 
             if (!blogger) {
                 throw ({

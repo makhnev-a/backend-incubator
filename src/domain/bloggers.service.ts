@@ -22,7 +22,6 @@ export const bloggersService = {
         return await bloggersRepository.createBlogger(newBlogger)
     },
     async updateBlogger(id: number, name: string, youtubeUrl: string): Promise<boolean> {
-        debugger
         return await bloggersRepository.updateBlogger(id, name, youtubeUrl)
     },
     async findPostsFromBloggers(page: number, pageSize: number, bloggerId: number): Promise<PaginationResultType<PostType[]>> {
