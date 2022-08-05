@@ -6,11 +6,11 @@ export const bloggersRepository = {
     async findBloggerById(id: number): Promise<BloggerType | null> {
         return await bloggersCollection.findOne({id})
     },
-    async findAllBloggers(page: number = 1, pageSize: number = 10): Promise<PaginationResultType<BloggerType[]>> {
-        const totalCount: number = await bloggersCollection.count({})
+    async findAllBloggers(page: number = 1, pageSize: number = 10, searchName: string): Promise<PaginationResultType<BloggerType[]>> {
+        const totalCount: number = await bloggersCollection.countDocuments({name: {$regex: searchName}})
         const pagesCount: number = Math.ceil(totalCount / pageSize)
-        const realPage = (page - 1) * pageSize
-        const bloggers: BloggerType[] = await bloggersCollection.find({})
+        const realPage: number = (page - 1) * pageSize
+        const bloggers: BloggerType[] = await bloggersCollection.find({name: {$regex: searchName}})
             .skip(realPage)
             .limit(pageSize)
             .toArray()

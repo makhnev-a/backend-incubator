@@ -64,10 +64,11 @@ bloggersRouter.put(
 bloggersRouter.get(
     `/`,
     async (req: Request, res: Response) => {
-        const {PageNumber, PageSize} = req.query
+        const {PageNumber, PageSize, SearchNameTerm} = req.query
         const page = PageNumber ? PageNumber : 1
         const pageSize = PageSize ? PageSize : 10
-        const result: PaginationResultType<BloggerType[]> = await bloggersService.findAllBloggers(+page, +pageSize)
+        const searchName = SearchNameTerm ? String(SearchNameTerm) : ""
+        const result: PaginationResultType<BloggerType[]> = await bloggersService.findAllBloggers(+page, +pageSize, searchName)
 
         res.status(200).send(result)
     }
