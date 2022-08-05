@@ -4,7 +4,7 @@ import {PaginationResultType} from "./types";
 
 export const bloggersRepository = {
     async findBloggerById(id: number): Promise<BloggerType | null> {
-        return await bloggersCollection.findOne({id})
+        return await bloggersCollection.findOne({id}, {projection: {_id: 0}})
     },
     async findAllBloggers(page: number = 1, pageSize: number = 10, searchName: string): Promise<PaginationResultType<BloggerType[]>> {
         const totalCount: number = await bloggersCollection.countDocuments({name: {$regex: searchName}})
@@ -25,7 +25,6 @@ export const bloggersRepository = {
     },
     async removeBloggerById(id: number): Promise<boolean> {
         const result = await bloggersCollection.deleteOne({id})
-
         return result.deletedCount === 1
     },
     async createBlogger(newBlogger: BloggerType): Promise<void> {
@@ -33,7 +32,6 @@ export const bloggersRepository = {
     },
     async updateBlogger(id: number, name: string, youtubeUrl: string): Promise<boolean> {
         const result = await bloggersCollection.updateOne({id}, {name, youtubeUrl})
-
         return result.matchedCount === 1
     },
     async findPostsFromBloggers(page: number, pageSize: number, bloggerId: number): Promise<PaginationResultType<PostType[]>> {
