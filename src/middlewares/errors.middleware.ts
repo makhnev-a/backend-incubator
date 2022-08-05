@@ -9,7 +9,7 @@ export const checkErrorsMiddleware = (req: CustomRequest, res: Response, next: N
         }
     })
     const errorsResult = myValidationResult(req)
-
+    debugger
     if (!errorsResult.isEmpty()) {
         return res.status(400).send({
             errorsMessages: Object.values(errorsResult.mapped())

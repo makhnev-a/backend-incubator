@@ -2,7 +2,7 @@ import {checkErrorsMiddleware} from "../middlewares/errors.middleware";
 import {body} from "express-validator";
 import {bloggersRepository} from "../repositories/local/bloggers.repository";
 
-const titleValidate = [
+export const titleValidate = [
     body("title")
         .exists()
         .withMessage({
@@ -18,7 +18,7 @@ const titleValidate = [
         }),
 ]
 
-const shortDescriptionValidate = [
+export const shortDescriptionValidate = [
     body("shortDescription")
         .exists()
         .withMessage({
@@ -34,7 +34,7 @@ const shortDescriptionValidate = [
         }),
 ]
 
-const contentValidate = [
+export const contentValidate = [
     body("content")
         .exists()
         .withMessage({
@@ -50,7 +50,7 @@ const contentValidate = [
         }),
 ]
 
-const bloggerIdValidate = [
+export const bloggerIdValidate = [
     body("bloggerId")
         .exists()
         .withMessage({

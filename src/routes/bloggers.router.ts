@@ -1,13 +1,37 @@
 import {Request, Response, Router} from "express"
 import authMiddleware from "../middlewares/auth"
 import bloggersValidator from "../validators/bloggers.validator"
-import postsValidator from "../validators/posts.validator"
+import postsValidator, {contentValidate, shortDescriptionValidate, titleValidate} from "../validators/posts.validator"
 import {bloggersService} from "../domain/bloggers.service"
 import {PaginationResultType} from "../repositories/mongo/types";
 import {BloggerType, PostType} from "../repositories/types";
 import {postsService} from "../domain/posts.service";
+import {checkErrorsMiddleware} from "../middlewares/errors.middleware";
 
 export const bloggersRouter = Router({})
+
+bloggersRouter.post(
+    `/:bloggerId/posts`,
+    authMiddleware,
+    titleValidate,
+    shortDescriptionValidate,
+    contentValidate,
+    checkErrorsMiddleware,
+    async (req: Request, res: Response) => {
+        const bloggerId: number = +req.params.bloggerId
+        const blogger: BloggerType | null = await bloggersService.findBloggerById(bloggerId)
+
+        if (!blogger) {
+            return res.sendStatus(404)
+        }
+
+        const postId: number = Number(new Date())
+        await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, bloggerId, "Andrey Makhnev", postId)
+
+        const newPost: PostType | null = await postsService.findPostById(postId)
+        res.status(201).send(newPost)
+    }
+)
 
 bloggersRouter.post(
     `/`,
@@ -22,19 +46,7 @@ bloggersRouter.post(
     }
 )
 
-bloggersRouter.post(
-    `/bloggers/:bloggerId/posts`,
-    authMiddleware,
-    [...postsValidator],
-    async (req: Request, res: Response) => {
-        const bloggerId: number = +req.params.bloggerId
-        const postId: number = Number(new Date())
-        await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, bloggerId, "Andrey Makhnev", postId)
 
-        const newPost: PostType | null = await postsService.findPostById(postId)
-        res.status(201).send(newPost)
-    }
-)
 
 bloggersRouter.delete(
     `/:id`,
