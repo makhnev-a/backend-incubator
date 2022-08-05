@@ -10,7 +10,7 @@ export const bloggersRepository = {
         const totalCount: number = await bloggersCollection.countDocuments({name: {$regex: searchName}})
         const pagesCount: number = Math.ceil(totalCount / pageSize)
         const realPage: number = (page - 1) * pageSize
-        const bloggers: BloggerType[] = await bloggersCollection.find({name: {$regex: searchName}})
+        const bloggers: BloggerType[] = await bloggersCollection.find({name: {$regex: searchName}}, {projection: {_id: 0}})
             .skip(realPage)
             .limit(pageSize)
             .toArray()
@@ -40,7 +40,7 @@ export const bloggersRepository = {
         const totalCount: number = await postsCollection.countDocuments({bloggerId})
         const pagesCount: number = Math.ceil(totalCount / pageSize)
         const realPage: number = (page - 1) * pageSize
-        const posts: PostType[] = await postsCollection.find({bloggerId})
+        const posts: PostType[] = await postsCollection.find({bloggerId}, {projection: {_id: 0}})
             .skip(realPage)
             .limit(pageSize)
             .toArray()
