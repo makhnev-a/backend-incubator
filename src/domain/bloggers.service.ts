@@ -1,6 +1,6 @@
 import {bloggersRepository} from "../repositories/mongo/bloggers.repository";
 import {PaginationResultType} from "../repositories/mongo/types";
-import { BloggerType } from "../repositories/types";
+import {BloggerType, PostType} from "../repositories/types";
 
 export const bloggersService = {
     async findBloggerById(id: number): Promise<BloggerType | null> {
@@ -23,5 +23,8 @@ export const bloggersService = {
     },
     async updateBlogger(id: number, name: string, youtubeUrl: string): Promise<boolean> {
         return await bloggersRepository.updateBlogger(id, name, youtubeUrl)
+    },
+    async findPostsFromBloggers(page: number, pageSize: number, bloggerId: number): Promise<PaginationResultType<PostType[]>> {
+        return await bloggersRepository.findPostsFromBloggers(page, pageSize, bloggerId)
     }
 }

@@ -1,5 +1,5 @@
-import {bloggersCollection} from "../db"
-import { BloggerType } from "../types";
+import {bloggersCollection, postsCollection} from "../db"
+import {BloggerType, PostType} from "../types";
 import {PaginationResultType} from "./types";
 
 export const bloggersRepository = {
@@ -35,5 +35,22 @@ export const bloggersRepository = {
         const result = await bloggersCollection.updateOne({id}, {name, youtubeUrl})
 
         return result.matchedCount === 1
+    },
+    async findPostsFromBloggers(page: number, pageSize: number, bloggerId: number): Promise<PaginationResultType<PostType[]>> {
+        const totalCount: number = await postsCollection.countDocuments({bloggerId})
+        const pagesCount: number = Math.ceil(totalCount / pageSize)
+        const realPage: number = (page - 1) * pageSize
+        const posts: PostType[] = await postsCollection.find({bloggerId})
+            .skip(realPage)
+            .limit(pageSize)
+            .toArray()
+
+        return {
+            pagesCount,
+            page,
+            pageSize,
+            totalCount,
+            items: posts,
+        }
     }
 }

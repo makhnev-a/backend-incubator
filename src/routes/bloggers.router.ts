@@ -3,7 +3,7 @@ import authMiddleware from "../middlewares/auth"
 import bloggersValidator from "../validators/bloggers.validator"
 import {bloggersService} from "../domain/bloggers.service"
 import {PaginationResultType} from "../repositories/mongo/types";
-import {BloggerType} from "../repositories/types";
+import {BloggerType, PostType} from "../repositories/types";
 
 export const bloggersRouter = Router({})
 
@@ -83,5 +83,22 @@ bloggersRouter.get(
             return res.sendStatus(404)
         }
         res.send(blogger)
+    }
+)
+
+bloggersRouter.get(
+    `/:bloggerId/posts`,
+    async (req: Request, res: Response) => {
+        const {PageNumber, PageSize} = req.query
+        const page = PageNumber ? PageNumber : 1
+        const pageSize = PageSize ? PageSize : 10
+        const blogger: BloggerType | null = await bloggersService.findBloggerById(+req.params.bloggerId)
+
+        if (!blogger) {
+            return res.sendStatus(404)
+        }
+
+        const posts: PaginationResultType<PostType[]> = await bloggersService.findPostsFromBloggers(+page, +pageSize, +req.params.bloggerId)
+        res.status(200).send(posts)
     }
 )
