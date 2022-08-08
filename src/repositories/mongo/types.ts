@@ -21,3 +21,11 @@ export type UserMongoType = {
     passwordSalt: string
     passwordHash: string
 }
+
+export type CommentType = {
+    _id?: ObjectId
+    content: string
+    userId: ObjectId | undefined
+    userLogin: string | undefined
+    addedAt: Date
+}

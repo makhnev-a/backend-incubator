@@ -1,5 +1,5 @@
 import {checkErrorsMiddleware} from "../middlewares/errors.middleware";
-import {body} from "express-validator";
+import {body, param} from "express-validator";
 
 export const contentValidate = [
     body("content")

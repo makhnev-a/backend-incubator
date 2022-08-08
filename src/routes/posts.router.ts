@@ -1,10 +1,13 @@
 import {Request, Response, Router} from "express"
-import authMiddleware from "../middlewares/auth"
+import authMiddleware, {authJWTMiddleware} from "../middlewares/auth"
 import postsValidator from "../validators/posts.validator"
+import commentsValidator from "../validators/comments.validator"
 import {postsService} from "../domain/posts.service"
-import {PaginationResultType} from "../repositories/mongo/types";
-import {BloggerType, PostType} from "../repositories/types";
-import {bloggersService} from "../domain/bloggers.service";
+import {CommentType, PaginationResultType} from "../repositories/mongo/types"
+import {BloggerType, PostType} from "../repositories/types"
+import {bloggersService} from "../domain/bloggers.service"
+import {commentsService} from "../domain/comments.service"
+import {LoginRequest} from "../types/request.type";
 
 export const postsRouter = Router({})
 
@@ -95,5 +98,29 @@ postsRouter.get(
         }
 
         res.send(post)
+    }
+)
+
+postsRouter.post(
+    `/:postId/comments`,
+    authJWTMiddleware,
+    [...commentsValidator],
+    async (req: LoginRequest, res: Response) => {
+        const post: PostType | null = await postsService.findPostById(+req.params.postId)
+
+        if (!post) {
+            return res.sendStatus(404)
+        }
+
+        const newComment = {
+            content: req.body.content,
+            userId: req.user?._id,
+            userLogin: req.user?.login,
+            addedAt: new Date()
+        }
+
+        const comment: CommentType | null = await commentsService.createComment(newComment)
+        // const comment: CommentType | null = await commentsService.createComment(req.body.content, req.user?._id, req.user?.login, new Date())
+        res.status(201).send(comment)
     }
 )

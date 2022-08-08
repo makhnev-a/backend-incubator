@@ -1,7 +1,7 @@
 import {MongoClient} from "mongodb"
 import {config} from "../config";
 import {BloggerType, PostType } from "./types";
-import {UserMongoType} from "./mongo/types";
+import {CommentType, UserMongoType} from "./mongo/types";
 
 const mongoURL = config.dbURL
 
@@ -11,6 +11,7 @@ const db = client.db("samuraiback")
 export const postsCollection = db.collection<PostType>("posts")
 export const bloggersCollection = db.collection<BloggerType>("bloggers")
 export const usersCollection = db.collection<UserMongoType>("users")
+export const commentsCollection = db.collection<CommentType>("comments")
 
 export async function runDB() {
     try {

@@ -39,17 +39,10 @@ export const usersRepository = {
             items: users,
         }
     },
-    async findUserById(userId: ObjectId): Promise<UserType | null> {
+    async findUserById(userId: ObjectId): Promise<UserMongoType | null> {
         const user = await usersCollection.findOne({_id: userId})
 
-        if (!user) {
-            return null
-        }
-
-        return {
-            id: user._id,
-            login: user.login
-        }
+        return !user ? null : user
     },
     async findUserByLogin(login: string): Promise<UserMongoType | null> {
         const user: UserMongoType | null = await usersCollection.findOne({login})
