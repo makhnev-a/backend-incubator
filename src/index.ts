@@ -7,12 +7,12 @@ import express, {Request, Response} from "express";
 import {videosRouter} from "./routes/videos.router";
 import {bloggersRouter} from "./routes/bloggers.router";
 import {usersRouter} from "./routes/users.router";
+import {commentsRouter} from "./routes/comments.router";
 
 const app = express()
 const port = process.env.PORT || 5000
 
 app.use(cors())
-// app.use(express.json())
 app.use(bodyParser.json())
 
 app.get('/', (req: Request, res: Response) => {
@@ -24,11 +24,7 @@ app.use('/posts', postsRouter)
 app.use('/bloggers', bloggersRouter)
 app.use('/auth', authRouter)
 app.use('/users', usersRouter)
-
-// app.use((err: any, req: any, res: any, next: any) => {
-//     console.error(err)
-//     res.status(500).send('Something broke!')
-// })
+app.use('/comments', commentsRouter)
 
 const startApp = async () => {
     await runDB()

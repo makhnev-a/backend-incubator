@@ -1,5 +1,6 @@
 import {commentsCollection} from "../db";
 import {CommentType, PaginationResultType} from "./types";
+import {ObjectId} from "mongodb";
 
 export const commentsRepository = {
     async createComment(comment: CommentType): Promise<CommentType | null> {
@@ -26,5 +27,12 @@ export const commentsRepository = {
             totalCount,
             items: comments,
         }
+    },
+    async findCommentById(commentId: string): Promise<CommentType | null> {
+        return await commentsCollection.findOne({_id: new ObjectId(commentId)})
+    },
+    async removeComment(commentId: string): Promise<boolean> {
+        const result = await commentsCollection.deleteOne({_id: new ObjectId(commentId)})
+        return result.deletedCount === 1
     }
 }
