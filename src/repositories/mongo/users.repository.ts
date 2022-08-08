@@ -50,5 +50,10 @@ export const usersRepository = {
             id: user._id,
             login: user.login
         }
+    },
+    async findUserByLogin(login: string): Promise<UserMongoType | null> {
+        const user: UserMongoType | null = await usersCollection.findOne({login})
+
+        return !user ? null : user
     }
 }

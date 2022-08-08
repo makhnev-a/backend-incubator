@@ -17,17 +17,17 @@ export const usersService = {
 
         return await usersRepository.createUser(newUser)
     },
-    async checkCredentials(login: string, password: string) {
-        // const user = await rep.user
-        // if (!user) {
-        //     return false
-        // }
-        // const passwordHash = await this._generateHash(password, user.passwordSalt)
-        //
-        // if (user.passwordHash !== passwordHash) {
-        //     return false
-        // }
-        // return true
+    async checkCredentials(login: string, password: string): Promise<boolean> {
+        const user = await usersRepository.findUserByLogin(login)
+
+        if (!user) {
+            return false
+        }
+
+        const passwordHash = await this._generateHash(password, user.passwordSalt)
+
+        return user.passwordHash === passwordHash;
+
     },
     async _generateHash(password: string, salt: string) {
         const hash = await bcrypt.hash(password, salt)
