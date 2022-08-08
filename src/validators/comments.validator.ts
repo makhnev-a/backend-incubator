@@ -17,7 +17,35 @@ export const contentValidate = [
         })
 ]
 
+export const postIdValidator = [
+    param("postId")
+        .exists()
+        .withMessage({
+            message: "postId is not exist",
+            field: "postId"
+        }),
+    param("postId")
+        .isInt({min: 1})
+        .withMessage({
+            message: "postId is not a number",
+            field: "postId"
+        }),
+    // param("postId")
+    //     .custom(async (postId) => {
+    //         const post: PostType | null = await postsService.findPostById(postId)
+    //
+    //         if (!post) {
+    //             throw ({
+    //                 message: "postId not found",
+    //                 field: "postId"
+    //             })
+    //         }
+    //         return true
+    //     })
+]
+
 export default [
+    ...postIdValidator,
     ...contentValidate,
     checkErrorsMiddleware,
 ]

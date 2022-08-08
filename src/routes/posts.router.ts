@@ -1,7 +1,7 @@
 import {Request, Response, Router} from "express"
 import authMiddleware, {authJWTMiddleware} from "../middlewares/auth"
 import postsValidator from "../validators/posts.validator"
-import commentsValidator from "../validators/comments.validator"
+import commentsValidator, {postIdValidator} from "../validators/comments.validator"
 import {postsService} from "../domain/posts.service"
 import {CommentType, PaginationResultType} from "../repositories/mongo/types"
 import {BloggerType, PostType} from "../repositories/types"
@@ -120,7 +120,24 @@ postsRouter.post(
         }
 
         const comment: CommentType | null = await commentsService.createComment(newComment)
-        // const comment: CommentType | null = await commentsService.createComment(req.body.content, req.user?._id, req.user?.login, new Date())
         res.status(201).send(comment)
+    }
+)
+
+postsRouter.get(
+    `/:postId/comments`,
+    postIdValidator,
+    async (req: Request, res: Response) => {
+        const post: PostType | null = await postsService.findPostById(+req.params.postId)
+
+        if (!post) {
+            return res.sendStatus(404)
+        }
+
+        const page: number = req.query.PageNumber ? +req.query.PageNumber : 1
+        const pageSize: number = req.query.PageSize ? +req.query.PageSize : 10
+
+        const comments: PaginationResultType<CommentType[]> = await commentsService.findAllComments(+req.params.postId, page, pageSize)
+        res.status(200).send(comments)
     }
 )
