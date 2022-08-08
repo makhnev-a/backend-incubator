@@ -1,10 +1,12 @@
-import express, {Request, Response} from "express";
 import cors from "cors"
 import bodyParser from "body-parser";
-import {videosRouter} from "./routes/videos.router";
-import {postsRouter} from "./routes/posts.router";
-import {bloggersRouter} from "./routes/bloggers.router";
 import {runDB} from "./repositories/db";
+import {authRouter} from "./routes/auth.router";
+import {postsRouter} from "./routes/posts.router";
+import express, {Request, Response} from "express";
+import {videosRouter} from "./routes/videos.router";
+import {bloggersRouter} from "./routes/bloggers.router";
+import {usersRouter} from "./routes/users.router";
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -20,6 +22,8 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/videos', videosRouter)
 app.use('/posts', postsRouter)
 app.use('/bloggers', bloggersRouter)
+app.use('/auth', authRouter)
+app.use('/users', usersRouter)
 
 // app.use((err: any, req: any, res: any, next: any) => {
 //     console.error(err)
