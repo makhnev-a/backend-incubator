@@ -17,16 +17,16 @@ export const usersService = {
 
         return await usersRepository.createUser(newUser)
     },
-    async checkCredentials(login: string, password: string): Promise<boolean> {
-        const user = await usersRepository.findUserByLogin(login)
+    async checkCredentials(login: string, password: string): Promise<UserMongoType | null> {
+        const user: UserMongoType | null = await usersRepository.findUserByLogin(login)
 
         if (!user) {
-            return false
+            return null
         }
 
         const passwordHash = await this._generateHash(password, user.passwordSalt)
 
-        return user.passwordHash === passwordHash;
+        return user.passwordHash === passwordHash ? user : null
 
     },
     async _generateHash(password: string, salt: string) {

@@ -14,6 +14,7 @@ export type UserType = {
 }
 
 export type UserMongoType = {
+    _id?: ObjectId
     createdAt: Date
     login: string
     password: string
