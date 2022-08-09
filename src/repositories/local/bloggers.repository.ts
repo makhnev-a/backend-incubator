@@ -1,6 +1,4 @@
-import { BloggerType } from "../types"
-
-export const bloggers: BloggerType[] = [
+export const bloggers = [
     {
         id: 1,
         name: "Petr",
@@ -19,10 +17,10 @@ export const bloggers: BloggerType[] = [
 ]
 
 export const bloggersRepository = {
-    async findBloggerById(id: number): Promise<BloggerType | undefined> {
+    async findBloggerById(id: number): Promise<any> {
         return bloggers.find(blogger => blogger.id === id)
     },
-    async findAllBloggers(): Promise<BloggerType[]> {
+    async findAllBloggers(): Promise<any> {
         return bloggers
     },
     async removeBloggerById(id: number): Promise<boolean> {
@@ -43,7 +41,7 @@ export const bloggersRepository = {
         bloggers.push(newBlogger)
     },
     async updateBlogger(id: number, name: string, youtubeUrl: string): Promise<boolean> {
-        const blogger: BloggerType | undefined = await bloggersRepository.findBloggerById(id)
+        const blogger: any | undefined = await bloggersRepository.findBloggerById(id)
 
         if (blogger) {
             blogger.name = name
