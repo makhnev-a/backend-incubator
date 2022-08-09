@@ -1,6 +1,4 @@
-import { PostType } from "../types"
-
-export const posts: PostType[] = [
+export const posts = [
     {
         id: 1,
         title: "Hello world!",
@@ -28,10 +26,10 @@ export const posts: PostType[] = [
 ]
 
 export const postsRepository = {
-    async findAllPosts(): Promise<PostType[]> {
+    async findAllPosts(): Promise<any> {
         return posts
     },
-    async findPostById(id: number): Promise<PostType | undefined> {
+    async findPostById(id: number): Promise<any> {
         return posts.find(post => post.id === id)
     },
     async removePostById(id: number): Promise<boolean> {
@@ -55,7 +53,7 @@ export const postsRepository = {
         posts.push(newPost)
     },
     async updatePost(id: number, title: string, shortDescription: string, content: string, bloggerId: number): Promise<boolean> {
-        const post: PostType | undefined = await postsRepository.findPostById(id)
+        const post: any = await postsRepository.findPostById(id)
 
         if (post) {
             post.title = title
