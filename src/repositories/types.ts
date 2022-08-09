@@ -1,5 +1,8 @@
+import {ObjectId} from "mongodb";
+
 export type BloggerType = {
-    id: number
+    _id?: ObjectId
+    id?: string
     name: string
     youtubeUrl: string
 }
@@ -9,6 +12,6 @@ export type PostType = {
     title: string
     shortDescription: string
     content: string
-    bloggerId: number
+    bloggerId: ObjectId
     bloggerName: string
 }

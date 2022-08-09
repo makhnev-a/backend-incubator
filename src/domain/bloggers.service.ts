@@ -3,28 +3,30 @@ import {PaginationResultType} from "../repositories/mongo/types";
 import {BloggerType, PostType} from "../repositories/types";
 
 export const bloggersService = {
-    async findBloggerById(id: number): Promise<BloggerType | null> {
+    async findBloggerById(id: string): Promise<BloggerType | null> {
         return await bloggersRepository.findBloggerById(id)
     },
     async findAllBloggers(page: number, pageSize: number, searchName: string): Promise<PaginationResultType<BloggerType[]>> {
         return await bloggersRepository.findAllBloggers(page, pageSize, searchName)
     },
-    async removeBloggerById(id: number): Promise<boolean> {
+    async removeBloggerById(id: string): Promise<boolean> {
         return await bloggersRepository.removeBloggerById(id)
     },
-    async createBlogger(id: number, name: string, youtubeUrl: string): Promise<void> {
+    async createBlogger(name: string, youtubeUrl: string): Promise<BloggerType> {
         const newBlogger = {
-            id,
             name,
             youtubeUrl
         }
 
+        console.log(newBlogger);
+        debugger
+
         return await bloggersRepository.createBlogger(newBlogger)
     },
-    async updateBlogger(id: number, name: string, youtubeUrl: string): Promise<boolean> {
+    async updateBlogger(id: string, name: string, youtubeUrl: string): Promise<boolean> {
         return await bloggersRepository.updateBlogger(id, name, youtubeUrl)
     },
-    async findPostsFromBloggers(page: number, pageSize: number, bloggerId: number): Promise<PaginationResultType<PostType[]>> {
+    async findPostsFromBloggers(page: number, pageSize: number, bloggerId: string): Promise<PaginationResultType<PostType[]>> {
         return await bloggersRepository.findPostsFromBloggers(page, pageSize, bloggerId)
     }
 }

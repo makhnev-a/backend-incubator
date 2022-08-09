@@ -1,6 +1,7 @@
 import {postsCollection} from "../db"
-import { PostType } from "../types";
+import {PostType} from "../types";
 import {PaginationResultType} from "./types";
+import {ObjectId} from "mongodb";
 
 export const postsRepository = {
     async findAllPosts(page: number, pageSize: number): Promise<PaginationResultType<PostType[]>> {
@@ -33,8 +34,15 @@ export const postsRepository = {
     async createPost(newPost: PostType): Promise<void> {
         await postsCollection.insertOne(newPost)
     },
-    async updatePost(id: number, title: string, shortDescription: string, content: string, bloggerId: number): Promise<boolean> {
-        const result = await postsCollection.updateOne({id}, {$set: {title, shortDescription, content, bloggerId}})
+    async updatePost(id: number, title: string, shortDescription: string, content: string, bloggerId: string): Promise<boolean> {
+        const result = await postsCollection.updateOne({id}, {
+            $set: {
+                title,
+                shortDescription,
+                content,
+                bloggerId: new ObjectId(bloggerId)
+            }
+        })
 
         return result.matchedCount === 1
     }

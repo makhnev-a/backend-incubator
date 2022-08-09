@@ -1,7 +1,7 @@
 import {Request, Response, Router} from "express"
 import authMiddleware from "../middlewares/auth"
 import bloggersValidator from "../validators/bloggers.validator"
-import postsValidator, {contentValidate, shortDescriptionValidate, titleValidate} from "../validators/posts.validator"
+import {contentValidate, shortDescriptionValidate, titleValidate} from "../validators/posts.validator"
 import {bloggersService} from "../domain/bloggers.service"
 import {PaginationResultType} from "../repositories/mongo/types";
 import {BloggerType, PostType} from "../repositories/types";
@@ -18,7 +18,7 @@ bloggersRouter.post(
     contentValidate,
     checkErrorsMiddleware,
     async (req: Request, res: Response) => {
-        const bloggerId: number = +req.params.bloggerId
+        const bloggerId: string = req.params.bloggerId
         const blogger: BloggerType | null = await bloggersService.findBloggerById(bloggerId)
 
         if (!blogger) {
@@ -38,27 +38,22 @@ bloggersRouter.post(
     authMiddleware,
     [...bloggersValidator],
     async (req: Request, res: Response) => {
-        const bloggerId = Number(new Date())
-        await bloggersService.createBlogger(bloggerId, req.body.name, req.body.youtubeUrl)
-
-        const newBlogger: BloggerType | null = await bloggersService.findBloggerById(bloggerId)
+        const newBlogger: BloggerType | null = await bloggersService.createBlogger(req.body.name, req.body.youtubeUrl)
         res.status(201).send(newBlogger)
     }
 )
 
-
-
 bloggersRouter.delete(
-    `/:id`,
+    `/:bloggerId`,
     authMiddleware,
     async (req: Request, res: Response) => {
-        const blogger: BloggerType | null = await bloggersService.findBloggerById(+req.params.id)
+        const blogger: BloggerType | null = await bloggersService.findBloggerById(req.params.bloggerId)
 
         if (!blogger) {
             res.sendStatus(404)
         }
 
-        const isDeleted: boolean = await bloggersService.removeBloggerById(+req.params.id)
+        const isDeleted: boolean = await bloggersService.removeBloggerById(req.params.bloggerId)
 
         if (!isDeleted) {
             res.sendStatus(404)
@@ -69,17 +64,17 @@ bloggersRouter.delete(
 )
 
 bloggersRouter.put(
-    `/:id`,
+    `/:bloggerId`,
     authMiddleware,
     [...bloggersValidator],
     async (req: Request, res: Response) => {
-        const blogger: BloggerType | null = await bloggersService.findBloggerById(+req.params.id)
+        const blogger: BloggerType | null = await bloggersService.findBloggerById(req.params.bloggerId)
 
         if (!blogger) {
             return res.sendStatus(404)
         }
 
-        const isUpdated: boolean = await bloggersService.updateBlogger(+req.params.id, req.body.name, req.body.youtubeUrl)
+        const isUpdated: boolean = await bloggersService.updateBlogger(req.params.bloggerId, req.body.name, req.body.youtubeUrl)
 
         if (isUpdated) {
             res.sendStatus(204)
@@ -105,7 +100,7 @@ bloggersRouter.get(
 bloggersRouter.get(
     `/:id`,
     async (req: Request, res: Response) => {
-        const blogger: BloggerType | null = await bloggersService.findBloggerById(+req.params.id)
+        const blogger: BloggerType | null = await bloggersService.findBloggerById(req.params.id)
 
         if (!blogger) {
             return res.sendStatus(404)
@@ -120,13 +115,13 @@ bloggersRouter.get(
         const {PageNumber, PageSize} = req.query
         const page = PageNumber ? PageNumber : 1
         const pageSize = PageSize ? PageSize : 10
-        const blogger: BloggerType | null = await bloggersService.findBloggerById(+req.params.bloggerId)
+        const blogger: BloggerType | null = await bloggersService.findBloggerById(req.params.bloggerId)
 
         if (!blogger) {
             return res.sendStatus(404)
         }
 
-        const posts: PaginationResultType<PostType[]> = await bloggersService.findPostsFromBloggers(+page, +pageSize, +req.params.bloggerId)
+        const posts: PaginationResultType<PostType[]> = await bloggersService.findPostsFromBloggers(+page, +pageSize, req.params.bloggerId)
         res.status(200).send(posts)
     }
 )

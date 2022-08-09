@@ -17,13 +17,13 @@ postsRouter.post(
     [...postsValidator],
     async (req: Request, res: Response) => {
         const postId = Number(new Date())
-        const blogger: BloggerType | null = await bloggersService.findBloggerById(+req.body.bloggerId)
+        const blogger: BloggerType | null = await bloggersService.findBloggerById(req.body.bloggerId)
 
         if (!blogger) {
             return res.sendStatus(404)
         }
 
-        await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, +req.body.bloggerId, "Andrey Makhnev", postId)
+        await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId, "Andrey Makhnev", postId)
 
         const post: PostType | null = await postsService.findPostById(postId)
         res.status(201).send(post)
@@ -59,7 +59,7 @@ postsRouter.put(
         if (!post) {
             return res.sendStatus(404)
         } else {
-            const blogger: BloggerType | null = await bloggersService.findBloggerById(+req.body.bloggerId)
+            const blogger: BloggerType | null = await bloggersService.findBloggerById(req.body.bloggerId)
 
             if (!blogger) {
                 return res.sendStatus(404)

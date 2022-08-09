@@ -1,6 +1,7 @@
 import {postsRepository} from "../repositories/mongo/posts.repository";
 import {PaginationResultType} from "../repositories/mongo/types";
 import {PostType} from "../repositories/types";
+import {ObjectId} from "mongodb";
 
 export const postsService = {
     async findAllPosts(page: number, pageSize: number): Promise<PaginationResultType<PostType[]>> {
@@ -12,19 +13,19 @@ export const postsService = {
     async removePostById(id: number): Promise<boolean> {
         return await postsRepository.removePostById(id)
     },
-    async createPost(title: string, shortDescription: string, content: string, bloggerId: number, bloggerName: string, id: number): Promise<void> {
+    async createPost(title: string, shortDescription: string, content: string, bloggerId: string, bloggerName: string, id: number): Promise<void> {
         const newPost: PostType = {
             id,
             title,
             shortDescription,
             content,
-            bloggerId,
+            bloggerId: new ObjectId(bloggerId),
             bloggerName,
         }
 
         return await postsRepository.createPost(newPost)
     },
-    async updatePost(id: number, title: string, shortDescription: string, content: string, bloggerId: number): Promise<boolean> {
+    async updatePost(id: number, title: string, shortDescription: string, content: string, bloggerId: string): Promise<boolean> {
         return await postsRepository.updatePost(id, title, shortDescription, content, bloggerId)
     }
 }
