@@ -7,15 +7,14 @@ export const postsService = {
     async findAllPosts(page: number, pageSize: number): Promise<PaginationResultType<PostType[]>> {
         return await postsRepository.findAllPosts(page, pageSize)
     },
-    async findPostById(id: number): Promise<PostType | null> {
+    async findPostById(id: string): Promise<PostType | null> {
         return await postsRepository.findPostById(id)
     },
-    async removePostById(id: number): Promise<boolean> {
+    async removePostById(id: string): Promise<boolean> {
         return await postsRepository.removePostById(id)
     },
-    async createPost(title: string, shortDescription: string, content: string, bloggerId: string, bloggerName: string, id: number): Promise<void> {
+    async createPost(title: string, shortDescription: string, content: string, bloggerId: string, bloggerName: string): Promise<PostType | null> {
         const newPost: PostType = {
-            id,
             title,
             shortDescription,
             content,
@@ -25,7 +24,7 @@ export const postsService = {
 
         return await postsRepository.createPost(newPost)
     },
-    async updatePost(id: number, title: string, shortDescription: string, content: string, bloggerId: string): Promise<boolean> {
+    async updatePost(id: string, title: string, shortDescription: string, content: string, bloggerId: string): Promise<boolean> {
         return await postsRepository.updatePost(id, title, shortDescription, content, bloggerId)
     }
 }

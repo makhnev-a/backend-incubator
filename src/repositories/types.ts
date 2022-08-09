@@ -8,7 +8,8 @@ export type BloggerType = {
 }
 
 export type PostType = {
-    id: number
+    _id?: ObjectId
+    id?: string
     title: string
     shortDescription: string
     content: string

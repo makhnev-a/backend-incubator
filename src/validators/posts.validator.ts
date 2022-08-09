@@ -59,9 +59,9 @@ export const bloggerIdValidate = [
             field: "bloggerId"
         }),
     body("bloggerId")
-        .isInt({min: 1})
+        .isString()
         .withMessage({
-            message: "bloggerId is not a number",
+            message: "bloggerId is not a string",
             field: "bloggerId"
         }),
     body("bloggerId")

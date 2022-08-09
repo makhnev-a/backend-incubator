@@ -25,8 +25,8 @@ bloggersRouter.post(
             return res.sendStatus(404)
         }
 
-        const postId: number = Number(new Date())
-        await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, bloggerId, "Andrey Makhnev", postId)
+        const postId: string = String(new Date())
+        await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, bloggerId, "Andrey Makhnev")
 
         const newPost: PostType | null = await postsService.findPostById(postId)
         res.status(201).send(newPost)

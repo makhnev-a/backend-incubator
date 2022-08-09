@@ -16,16 +16,13 @@ postsRouter.post(
     authMiddleware,
     [...postsValidator],
     async (req: Request, res: Response) => {
-        const postId = Number(new Date())
         const blogger: BloggerType | null = await bloggersService.findBloggerById(req.body.bloggerId)
 
         if (!blogger) {
             return res.sendStatus(404)
         }
 
-        await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId, "Andrey Makhnev", postId)
-
-        const post: PostType | null = await postsService.findPostById(postId)
+        const post: PostType | null = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId, "Andrey Makhnev")
         res.status(201).send(post)
     })
 
@@ -33,13 +30,13 @@ postsRouter.delete(
     `/:id`,
     authMiddleware,
     async (req: Request, res: Response) => {
-        const post: PostType | null = await postsService.findPostById(+req.params.id)
+        const post: PostType | null = await postsService.findPostById(req.params.id)
 
         if (!post) {
             return res.sendStatus(404)
         }
 
-        const isDeleted: boolean = await postsService.removePostById(+req.params.id)
+        const isDeleted: boolean = await postsService.removePostById(req.params.id)
 
         if (!isDeleted) {
             res.sendStatus(404)
@@ -54,7 +51,7 @@ postsRouter.put(
     authMiddleware,
     [...postsValidator],
     async (req: Request, res: Response) => {
-        const post: PostType | null = await postsService.findPostById(+req.params.id)
+        const post: PostType | null = await postsService.findPostById(req.params.id)
 
         if (!post) {
             return res.sendStatus(404)
@@ -65,7 +62,7 @@ postsRouter.put(
                 return res.sendStatus(404)
             }
 
-            const isUpdated: boolean = await postsService.updatePost(+req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
+            const isUpdated: boolean = await postsService.updatePost(req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
 
             if (isUpdated) {
                 res.sendStatus(204)
@@ -91,7 +88,7 @@ postsRouter.get(
 postsRouter.get(
     `/:id`,
     async (req: Request, res: Response) => {
-        const post: PostType | null = await postsService.findPostById(+req.params.id)
+        const post: PostType | null = await postsService.findPostById(req.params.id)
 
         if (!post) {
             return res.sendStatus(404)
@@ -106,7 +103,7 @@ postsRouter.post(
     authJWTMiddleware,
     [...commentsValidator],
     async (req: LoginRequest, res: Response) => {
-        const post: PostType | null = await postsService.findPostById(+req.params.postId)
+        const post: PostType | null = await postsService.findPostById(req.params.postId)
 
         if (!post) {
             return res.sendStatus(404)
@@ -128,7 +125,7 @@ postsRouter.get(
     `/:postId/comments`,
     postIdValidator,
     async (req: Request, res: Response) => {
-        const post: PostType | null = await postsService.findPostById(+req.params.postId)
+        const post: PostType | null = await postsService.findPostById(req.params.postId)
 
         if (!post) {
             return res.sendStatus(404)

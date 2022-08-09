@@ -25,9 +25,10 @@ export const postIdValidator = [
             field: "postId"
         }),
     param("postId")
-        .isInt({min: 1})
+        .isString()
+        // .isInt({min: 1})
         .withMessage({
-            message: "postId is not a number",
+            message: "postId is not a string",
             field: "postId"
         }),
     // param("postId")
