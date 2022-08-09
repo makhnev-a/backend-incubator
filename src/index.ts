@@ -20,7 +20,7 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 app.use('/videos', videosRouter)
-app.use('/posts', postsRouter)
+// app.use('/posts', postsRouter)
 app.use('/bloggers', bloggersRouter)
 app.use('/auth', authRouter)
 app.use('/users', usersRouter)
