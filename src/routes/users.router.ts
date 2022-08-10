@@ -32,7 +32,7 @@ usersRouter.delete(
     `/:userId`,
     authMiddleware,
     async (req: Request, res: Response) => {
-        const isUserDeleted: boolean = await usersService.removeUser(new ObjectId(req.params.userId))
+        const isUserDeleted: boolean = await usersService.removeUser(req.params.userId)
 
         if (!isUserDeleted) {
             return res.sendStatus(404)

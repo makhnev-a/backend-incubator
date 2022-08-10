@@ -12,19 +12,19 @@ export const usersRepository = {
             login: user.login
         }
     },
-    async removeUser(userId: ObjectId): Promise<boolean> {
+    async removeUser(userId: string): Promise<boolean> {
         try {
-            const user: UserMongoType | null = await usersCollection.findOne({_id: userId})
+            const user: UserMongoType | null = await usersCollection.findOne({_id: new ObjectId(userId)})
 
             if (!user) {
                 return false
             }
+
+            const result = await usersCollection.deleteOne({_id: new ObjectId(userId)})
+            return result.deletedCount === 1
         } catch {
             return false
         }
-
-        const result = await usersCollection.deleteOne({_id: userId})
-        return result.deletedCount === 1
     },
     async getAllUsers(page: number, pageSize: number): Promise<PaginationResultType<UserType[]>> {
         const totalCount: number = await usersCollection.count({})

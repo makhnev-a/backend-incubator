@@ -34,7 +34,7 @@ export const usersService = {
         console.log("hash: ", hash)
         return hash
     },
-    async removeUser(userId: ObjectId): Promise<boolean> {
+    async removeUser(userId: string): Promise<boolean> {
         return await usersRepository.removeUser(userId)
     },
     async getAllUsers(page: number, pageSize: number): Promise<PaginationResultType<UserType[]>> {
