@@ -40,7 +40,15 @@ export const commentsRepository = {
     },
     async findCommentById(commentId: string): Promise<CommentType | null> {
         try {
-            return await commentsCollection.findOne({_id: new ObjectId(commentId)})
+            const comment: CommentType | null = await commentsCollection.findOne({_id: new ObjectId(commentId)})
+
+            return !comment ? null : {
+                id: commentId,
+                content: comment.content,
+                userId: comment.userId,
+                userLogin: comment.userLogin,
+                addedAt: comment.addedAt
+            }
         } catch {
             return null
         }
