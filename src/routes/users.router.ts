@@ -12,7 +12,7 @@ usersRouter.get(
     async (req: Request, res: Response) => {
         const page: number = req.query.PageNumber ? +req.query.PageNumber : 1
         const pageSize: number = req.query.PageSize ? +req.query.PageSize : 10
-        const users: PaginationResultType<UserMongoType[]> = await usersService.getAllUsers(page, pageSize)
+        const users: PaginationResultType<UserType[]> = await usersService.getAllUsers(page, pageSize)
 
         res.status(200).send(users)
     }

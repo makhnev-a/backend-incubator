@@ -9,7 +9,7 @@ export type PaginationResultType<T> = {
 }
 
 export type UserType = {
-    id: ObjectId
+    id: string
     login: string
 }
 

@@ -8,21 +8,25 @@ export const usersRepository = {
         const userId: ObjectId = result.insertedId
 
         return {
-            id: userId,
+            id: userId.toString(),
             login: user.login
         }
     },
     async removeUser(userId: ObjectId): Promise<boolean> {
-        const user: UserMongoType | null = await usersCollection.findOne({_id: userId})
+        try {
+            const user: UserMongoType | null = await usersCollection.findOne({_id: userId})
 
-        if (!user) {
+            if (!user) {
+                return false
+            }
+        } catch {
             return false
         }
 
         const result = await usersCollection.deleteOne({_id: userId})
         return result.deletedCount === 1
     },
-    async getAllUsers(page: number, pageSize: number): Promise<PaginationResultType<UserMongoType[]>> {
+    async getAllUsers(page: number, pageSize: number): Promise<PaginationResultType<UserType[]>> {
         const totalCount: number = await usersCollection.count({})
         const pagesCount: number = Math.ceil(totalCount / pageSize)
         const realPage: number = (page - 1) * pageSize
@@ -30,23 +34,33 @@ export const usersRepository = {
             .skip(realPage)
             .limit(pageSize)
             .toArray()
+        const mappedUsers: UserType[] = users.map(user => ({
+            id: new ObjectId(user._id).toString(),
+            login: user.login
+        }))
 
         return {
             pagesCount,
             page,
             pageSize,
             totalCount,
-            items: users,
+            items: mappedUsers,
         }
     },
     async findUserById(userId: ObjectId): Promise<UserMongoType | null> {
-        const user = await usersCollection.findOne({_id: userId})
-
-        return !user ? null : user
+        try {
+            const user = await usersCollection.findOne({_id: userId})
+            return !user ? null : user
+        } catch {
+            return null
+        }
     },
     async findUserByLogin(login: string): Promise<UserMongoType | null> {
-        const user: UserMongoType | null = await usersCollection.findOne({login})
-
-        return !user ? null : user
+        try {
+            const user: UserMongoType | null = await usersCollection.findOne({login})
+            return !user ? null : user
+        } catch {
+            return null
+        }
     }
 }

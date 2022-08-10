@@ -37,7 +37,7 @@ export const usersService = {
     async removeUser(userId: ObjectId): Promise<boolean> {
         return await usersRepository.removeUser(userId)
     },
-    async getAllUsers(page: number, pageSize: number): Promise<PaginationResultType<UserMongoType[]>> {
+    async getAllUsers(page: number, pageSize: number): Promise<PaginationResultType<UserType[]>> {
         return await usersRepository.getAllUsers(page, pageSize)
     },
     async getUserById(userId: ObjectId): Promise<UserMongoType | null> {
