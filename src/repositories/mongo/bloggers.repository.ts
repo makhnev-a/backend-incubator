@@ -5,15 +5,11 @@ import {ObjectId} from "mongodb";
 
 export const bloggersRepository = {
     async findBloggerById(id: string): Promise<BloggerType | null> {
-        const blogger: BloggerType | null = await bloggersCollection.findOne({_id: new ObjectId(id)}, {projection: {_id: 0}})
-
-        if (!blogger) {
+        try {
+            const blogger: BloggerType | null = await bloggersCollection.findOne({_id: new ObjectId(id)}, {projection: {_id: 0}})
+            return !blogger ? null : {...blogger, id}
+        } catch {
             return null
-        }
-
-        return {
-            ...blogger,
-            id,
         }
     },
     async findAllBloggers(page: number = 1, pageSize: number = 10, searchName: string): Promise<PaginationResultType<BloggerType[]>> {

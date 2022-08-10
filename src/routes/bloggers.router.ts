@@ -18,18 +18,18 @@ bloggersRouter.post(
     contentValidate,
     checkErrorsMiddleware,
     async (req: Request, res: Response) => {
-        const bloggerId: string = req.params.bloggerId
-        const blogger: BloggerType | null = await bloggersService.findBloggerById(bloggerId)
+        const blogger: BloggerType | null = await bloggersService.findBloggerById(req.params.bloggerId)
 
         if (!blogger) {
             return res.sendStatus(404)
         }
+        const post: PostType | null = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.bloggerId, "Andrey Makhnev")
 
-        const postId: string = String(new Date())
-        await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, bloggerId, "Andrey Makhnev")
+        if (!post) {
+            return res.sendStatus(404)
+        }
 
-        const newPost: PostType | null = await postsService.findPostById(postId)
-        res.status(201).send(newPost)
+        res.status(201).send(post)
     }
 )
 
@@ -50,15 +50,15 @@ bloggersRouter.delete(
         const blogger: BloggerType | null = await bloggersService.findBloggerById(req.params.bloggerId)
 
         if (!blogger) {
-            res.sendStatus(404)
+            return res.sendStatus(404)
         }
 
         const isDeleted: boolean = await bloggersService.removeBloggerById(req.params.bloggerId)
 
         if (!isDeleted) {
-            res.sendStatus(404)
+            return res.sendStatus(404)
         } else {
-            res.sendStatus(204)
+            return res.sendStatus(204)
         }
     }
 )
