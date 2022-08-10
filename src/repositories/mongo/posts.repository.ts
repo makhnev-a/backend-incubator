@@ -31,18 +31,22 @@ export const postsRepository = {
         }
     },
     async findPostById(id: string): Promise<PostType | null> {
-        const post: PostType | null = await postsCollection.findOne({_id: new ObjectId(id)})
+        try {
+            const post: PostType | null = await postsCollection.findOne({_id: new ObjectId(id)})
 
-        return post
-            ? {
-                id: new ObjectId(post._id).toString(),
-                title: post.title,
-                shortDescription: post.shortDescription,
-                content: post.content,
-                bloggerId: post.bloggerId,
-                bloggerName: post.bloggerName
-            }
-            : null
+            return post
+                ? {
+                    id: new ObjectId(post._id).toString(),
+                    title: post.title,
+                    shortDescription: post.shortDescription,
+                    content: post.content,
+                    bloggerId: post.bloggerId,
+                    bloggerName: post.bloggerName
+                }
+                : null
+        } catch {
+            return null
+        }
     },
     async removePostById(id: string): Promise<boolean> {
         const result = await postsCollection.deleteOne({_id: new ObjectId(id)})

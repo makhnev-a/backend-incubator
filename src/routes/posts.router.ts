@@ -22,8 +22,13 @@ postsRouter.post(
             return res.sendStatus(404)
         }
 
-        const post: PostType | null = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId, "Andrey Makhnev")
-        res.status(201).send(post)
+        const newPost: PostType | null = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId, "Andrey Makhnev")
+
+        if (!newPost) {
+            return res.sendStatus(404)
+        }
+
+        res.status(201).send(newPost)
     })
 
 postsRouter.delete(
@@ -65,9 +70,9 @@ postsRouter.put(
             const isUpdated: boolean = await postsService.updatePost(req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.bloggerId)
 
             if (isUpdated) {
-                res.sendStatus(204)
+                return res.sendStatus(204)
             } else {
-                res.sendStatus(404)
+                return res.sendStatus(404)
             }
         }
     }
@@ -117,6 +122,11 @@ postsRouter.post(
         }
 
         const comment: CommentType | null = await commentsService.createComment(newComment)
+
+        if (!comment) {
+            return res.sendStatus(404)
+        }
+
         res.status(201).send(comment)
     }
 )
