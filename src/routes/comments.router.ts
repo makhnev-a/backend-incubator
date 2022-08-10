@@ -60,7 +60,6 @@ commentsRouter.put(
     `/:commentId`,
     authJWTMiddleware,
     [...commentsValidator],
-    commentIdValidator,
     async (req: LoginRequest, res: Response) => {
         const comment: CommentType | null = await commentsService.findCommentById(req.params.commentId)
 
