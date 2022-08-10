@@ -57,17 +57,25 @@ export const bloggersRepository = {
         const totalCount: number = await postsCollection.countDocuments({bloggerId: new ObjectId(bloggerId)})
         const pagesCount: number = Math.ceil(totalCount / pageSize)
         const realPage: number = (page - 1) * pageSize
-        const posts: PostType[] = await postsCollection.find({bloggerId: new ObjectId(bloggerId)}, {projection: {_id: 0}})
+        const posts: PostType[] = await postsCollection.find({bloggerId: new ObjectId(bloggerId)})
             .skip(realPage)
             .limit(pageSize)
             .toArray()
+        const mappedPosts: PostType[] = posts.map(post => ({
+            id: new ObjectId(post._id).toString(),
+            title: post.title,
+            shortDescription: post.shortDescription,
+            content: post.content,
+            bloggerId: post.bloggerId,
+            bloggerName: post.bloggerName
+        }))
 
         return {
             pagesCount,
             page,
             pageSize,
             totalCount,
-            items: posts,
+            items: mappedPosts,
         }
     }
 }
