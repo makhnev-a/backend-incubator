@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import commentsValidator, {commentIdValidator, contentValidate} from "../validators/comments.validator"
+import commentsValidator from "../validators/comments.validator"
 import {CommentType} from "../repositories/mongo/types";
 import {commentsService} from "../domain/comments.service";
 import {authJWTMiddleware} from "../middlewares/auth";
@@ -19,15 +19,6 @@ commentsRouter.get(
         }
 
         res.status(200).send(comment)
-    }
-)
-
-/** Update comment by ID */
-commentsRouter.get(
-    `/:commentId`,
-    [...commentsValidator],
-    async (req: Request, res: Response) => {
-        res.sendStatus(200)
     }
 )
 
@@ -59,7 +50,7 @@ commentsRouter.delete(
 commentsRouter.put(
     `/:commentId`,
     authJWTMiddleware,
-    contentValidate,
+    [...commentsValidator],
     async (req: LoginRequest, res: Response) => {
         const comment: CommentType | null = await commentsService.findCommentById(req.params.commentId)
 

@@ -55,7 +55,7 @@ export const commentIdValidator = [
 ]
 
 export default [
-    ...postIdValidator,
+    // ...postIdValidator,
     ...contentValidate,
     checkErrorsMiddleware,
 ]
