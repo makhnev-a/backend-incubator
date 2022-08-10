@@ -45,6 +45,15 @@ export const postIdValidator = [
     //     })
 ]
 
+export const commentIdValidator = [
+    param("commentId")
+        .exists()
+        .withMessage({
+            message: "commentId is not exist",
+            field: "commentId"
+        }),
+]
+
 export default [
     ...postIdValidator,
     ...contentValidate,

@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import commentsValidator from "../validators/comments.validator"
+import commentsValidator, {commentIdValidator} from "../validators/comments.validator"
 import {CommentType} from "../repositories/mongo/types";
 import {commentsService} from "../domain/comments.service";
 import {authJWTMiddleware} from "../middlewares/auth";
@@ -60,6 +60,7 @@ commentsRouter.put(
     `/:commentId`,
     authJWTMiddleware,
     [...commentsValidator],
+    commentIdValidator,
     async (req: LoginRequest, res: Response) => {
         const comment: CommentType | null = await commentsService.findCommentById(req.params.commentId)
 
