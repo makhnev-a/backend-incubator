@@ -23,6 +23,7 @@ export type UserMongoType = {
 }
 
 export type CommentType = {
+    id?: string
     _id?: ObjectId
     content: string
     userId: ObjectId | undefined

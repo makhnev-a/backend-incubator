@@ -7,8 +7,11 @@ export const commentsRepository = {
         const result = await commentsCollection.insertOne(comment)
 
         return result.acknowledged ? {
-            ...comment,
-            _id: result.insertedId
+            id: new ObjectId(result.insertedId).toString(),
+            content: comment.content,
+            userId: comment.userId,
+            userLogin: comment.userLogin,
+            addedAt: comment.addedAt
         } : null
     },
     async findAllComments(postId: number, page: number, pageSize: number): Promise<PaginationResultType<CommentType[]>> {
@@ -19,21 +22,36 @@ export const commentsRepository = {
             .skip(realPage)
             .limit(pageSize)
             .toArray()
+        const mappedComments: CommentType[] = comments.map(comment => ({
+            id: new ObjectId(comment._id).toString(),
+            content: comment.content,
+            userId: comment.userId,
+            userLogin: comment.userLogin,
+            addedAt: comment.addedAt
+        }))
 
         return {
             pagesCount,
             page,
             pageSize,
             totalCount,
-            items: comments,
+            items: mappedComments,
         }
     },
     async findCommentById(commentId: string): Promise<CommentType | null> {
-        return await commentsCollection.findOne({_id: new ObjectId(commentId)})
+        try {
+            return await commentsCollection.findOne({_id: new ObjectId(commentId)})
+        } catch {
+            return null
+        }
     },
     async removeComment(commentId: string): Promise<boolean> {
-        const result = await commentsCollection.deleteOne({_id: new ObjectId(commentId)})
-        return result.deletedCount === 1
+        try {
+            const result = await commentsCollection.deleteOne({_id: new ObjectId(commentId)})
+            return result.deletedCount === 1
+        } catch {
+            return false
+        }
     },
     async updateComment(commentId: string, content: string): Promise<boolean> {
         const result = await commentsCollection.updateOne({_id: new ObjectId(commentId)}, {$set: {content}})
