@@ -4,6 +4,7 @@ import authMiddleware from "../middlewares/auth";
 import usersValidator from "../validators/auth.validator"
 import {PaginationResultType, UserMongoType, UserType} from "../repositories/mongo/types";
 import {ObjectId} from "mongodb";
+import authValidator from "../validators/auth.validator"
 
 export const usersRouter = Router({})
 

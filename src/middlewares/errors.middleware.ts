@@ -13,11 +13,13 @@ export const checkErrorsMiddleware = (req: CustomRequest, res: Response, next: N
     if (!errorsResult.isEmpty()) {
         const errArrays = Object.values(errorsResult.mapped())
 
-        if (errArrays[0].field === "login" || errArrays[0].field === "password") {
-            return res.status(401).send({
-                errorsMessages: errArrays
-            })
-        }
+        // Not working !!!
+
+        // if (errArrays[0].field === "login" || errArrays[0].field === "password") {
+        //     return res.status(401).send({
+        //         errorsMessages: errArrays
+        //     })
+        // }
 
         return res.status(400).send({
             errorsMessages: errArrays
