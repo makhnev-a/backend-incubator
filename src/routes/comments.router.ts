@@ -27,7 +27,6 @@ commentsRouter.delete(
     `/:commentId`,
     authJWTMiddleware,
     async (req: LoginRequest, res: Response) => {
-        console.log("moroz", JSON.stringify(req))
         const comment: CommentType | null = await commentsService.findCommentById(req.params.commentId)
 
         if (!comment) {
