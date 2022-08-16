@@ -18,9 +18,6 @@ export const bloggersService = {
             youtubeUrl
         }
 
-        console.log(newBlogger);
-        debugger
-
         return await bloggersRepository.createBlogger(newBlogger)
     },
     async updateBlogger(id: string, name: string, youtubeUrl: string): Promise<boolean> {

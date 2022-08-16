@@ -5,15 +5,15 @@ import {ObjectId} from "mongodb";
 export const commentsRepository = {
     async createComment(comment: CommentType): Promise<CommentType | null> {
         const result = await commentsCollection.insertOne(comment)
-
-        return result.acknowledged ? {
+        const comm = {
             id: new ObjectId(result.insertedId).toString(),
             content: comment.content,
             userId: comment.userId,
             userLogin: comment.userLogin,
             addedAt: comment.addedAt,
-            postId: comment.postId,
-        } : null
+        }
+
+        return result.acknowledged ? comm : null
     },
     async findAllComments(postId: string, page: number, pageSize: number): Promise<PaginationResultType<CommentType[]>> {
         const totalCount: number = await commentsCollection.count({postId})
