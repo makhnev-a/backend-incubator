@@ -47,7 +47,7 @@ export const usersRepository = {
             items: mappedUsers,
         }
     },
-    async findUserById(userId: ObjectId): Promise<UserMongoType | null> {
+    async findUserById(userId: ObjectId | undefined): Promise<UserMongoType | null> {
         try {
             const user = await usersCollection.findOne({_id: userId})
             return !user ? null : user

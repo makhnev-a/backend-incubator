@@ -40,7 +40,7 @@ export const usersService = {
     async getAllUsers(page: number, pageSize: number): Promise<PaginationResultType<UserType[]>> {
         return await usersRepository.getAllUsers(page, pageSize)
     },
-    async getUserById(userId: ObjectId): Promise<UserMongoType | null> {
+    async getUserById(userId: ObjectId | undefined): Promise<UserMongoType | null> {
         return await usersRepository.findUserById(userId)
     }
 }

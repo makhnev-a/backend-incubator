@@ -1,22 +1,19 @@
-import {Request, Response, Router} from "express"
+import {Response, Router} from "express"
 import authValidator from "../validators/auth.validator"
-import {usersService} from "../domain/users.service";
-import {UserMongoType} from "../repositories/mongo/types";
 import {jwtService} from "../domain/jwt.service";
+import {loginUserMiddleware} from "../middlewares/auth";
+import {LoginRequest} from "../types/request.type";
 
 export const authRouter = Router({})
 
 authRouter.post(
     `/login`,
+    loginUserMiddleware,
     [...authValidator],
-    async (req: Request, res: Response) => {
-        const user: UserMongoType | null = await usersService.checkCredentials(req.body.login, req.body.password)
-
-        if (!user) {
-            return res.sendStatus(401)
+    async (req: LoginRequest, res: Response) => {
+        if (req.user) {
+            const token = await jwtService.createJWT(req.user)
+            res.status(200).send(token)
         }
-
-        const token = await jwtService.createJWT(user)
-        res.status(200).send(token)
     }
 )
