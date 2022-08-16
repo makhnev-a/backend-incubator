@@ -118,7 +118,8 @@ postsRouter.post(
             content: req.body.content,
             userId: req.user?._id,
             userLogin: req.user?.login,
-            addedAt: new Date()
+            addedAt: new Date(),
+            postId: req.params.postId
         }
 
         const comment: CommentType | null = await commentsService.createComment(newComment)
@@ -144,7 +145,7 @@ postsRouter.get(
         const page: number = req.query.PageNumber ? +req.query.PageNumber : 1
         const pageSize: number = req.query.PageSize ? +req.query.PageSize : 10
 
-        const comments: PaginationResultType<CommentType[]> = await commentsService.findAllComments(+req.params.postId, page, pageSize)
+        const comments: PaginationResultType<CommentType[]> = await commentsService.findAllComments(req.params.postId, page, pageSize)
         res.status(200).send(comments)
     }
 )

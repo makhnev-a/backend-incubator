@@ -28,5 +28,6 @@ export type CommentType = {
     content: string
     userId: ObjectId | undefined
     userLogin: string | undefined
-    addedAt: Date
+    addedAt: Date,
+    postId?: string
 }

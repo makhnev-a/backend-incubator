@@ -62,7 +62,7 @@ export const postsRepository = {
             shortDescription: newPost.shortDescription,
             content: newPost.content,
             bloggerId: newPost.bloggerId,
-            bloggerName: newPost.bloggerName
+            bloggerName: newPost.bloggerName,
         }
     },
     async updatePost(id: string, title: string, shortDescription: string, content: string, bloggerId: string): Promise<boolean> {

@@ -11,14 +11,15 @@ export const commentsRepository = {
             content: comment.content,
             userId: comment.userId,
             userLogin: comment.userLogin,
-            addedAt: comment.addedAt
+            addedAt: comment.addedAt,
+            postId: comment.postId,
         } : null
     },
-    async findAllComments(postId: number, page: number, pageSize: number): Promise<PaginationResultType<CommentType[]>> {
-        const totalCount: number = await commentsCollection.count({})
+    async findAllComments(postId: string, page: number, pageSize: number): Promise<PaginationResultType<CommentType[]>> {
+        const totalCount: number = await commentsCollection.count({postId})
         const pagesCount: number = Math.ceil(totalCount / pageSize)
         const realPage: number = (page - 1) * pageSize
-        const comments: CommentType[] = await commentsCollection.find({})
+        const comments: CommentType[] = await commentsCollection.find({postId})
             .skip(realPage)
             .limit(pageSize)
             .toArray()
@@ -27,7 +28,7 @@ export const commentsRepository = {
             content: comment.content,
             userId: comment.userId,
             userLogin: comment.userLogin,
-            addedAt: comment.addedAt
+            addedAt: comment.addedAt,
         }))
 
         return {
